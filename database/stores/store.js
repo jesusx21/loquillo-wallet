@@ -7,28 +7,41 @@ const snakeCase = require('lodash.snakecase');
 const { DatabaseError, EntityNotFound, InvalidInputData, InvalidId } = require('../errors');
 
 class Store {
-  constructor(connection) {
-    this._connection = connection;
+  constructor(connection, buildEntity) {
     this._tableName = null;
     this._storeName = null;
+
+    this._connection = connection;
+    this._buildEntity = buildEntity;
   }
 
   async create(data) {
     const dataToSave = this._formatInputData(omit(data, 'id'));
 
-    const [record] = await this._connection(this._tableName)
+    let record;
+
+    try {
+      record = await this._connection(this._tableName)
       .insert(dataToSave)
       .returning('*')
-      .catch((error) => this._onUnexpectedError(error, data));
+      .first();
+    } catch(error) {
+      return this._onUnexpectedError(error, data)
+    }
 
     return this._formatOutputData(record);
   }
 
   async findById(id) {
-    const record = await this._connection(this._tableName)
-      .where('id', id)
-      .first()
-      .catch((error) => this._onUnexpectedError(error, id));
+    let record;
+
+    try {
+      record = await this._connection(this._tableName)
+        .where('id', id)
+        .first();
+    } catch(error) {
+      return this._onUnexpectedError(error, id);
+    }
 
     if (!record) return this._onNotFoundError(id)
 
@@ -38,10 +51,13 @@ class Store {
   async update(data) {
     const dataToSave = this._formatInputData(omit(data, ['id', 'createdAt']));
 
-    await this._connection(this._tableName)
-      .where('id', data.id)
-      .update({ ...dataToSave, updated_at: new Date() })
-      .catch((error) => this._onUnexpectedError(error, data));
+    try {
+      await this._connection(this._tableName)
+        .where('id', data.id)
+        .update({ ...dataToSave, updated_at: new Date() });
+    } catch(error) {
+      return this._onUnexpectedError(error, data);
+    }
 
     return this.findById(data.id);
   }
@@ -58,10 +74,15 @@ class Store {
     if (query.limit) qb.limit(query.limit);
     if (query.skip) qb.offset(query.skip);
 
-    const records = await qb
-      .catch(this._onUnexpectedError)
+    let records;
 
-    return records.map(this._formatOutputData);
+    try {
+      records = await qb;
+    } catch(error) {
+      return this._onUnexpectedError(error);
+    }
+
+    return _formatMultipleOutputData(records);
   }
 
   async _findOne(query) {
@@ -74,7 +95,6 @@ class Store {
       .orderBy(sort)
       .first();
 
-    console.log(qb.toString())
     const result = await qb.catch(this._onUnexpectedError)
 
     return this._formatOutputData(result)
@@ -94,21 +114,29 @@ class Store {
   }
 
   _formatOutputData(data) {
-    return camelizeObject(data, { deep: true });
+    const entityData = camelizeObject(data, { deep: true });
+
+    return this._buildEntity(entityData);
+  }
+
+  _formatMultipleOutputData(data) {
+    const promises = data.map(this._formatOutputData.bind(this));
+
+    return Promise.all(promises);
   }
 
   _onUnexpectedError(error, data = {}) {
-    if (error.code === '42703') return Promise.reject(new InvalidInputData(error, data));
+    if (error.code === '42703') throw new InvalidInputData(error, data);
     if (error.code === '22P02') {
-      if (error.file === 'uuid.c') return Promise.reject(new InvalidId(data))
-      return Promise.reject(new InvalidInputData(error, data));
+      if (error.file === 'uuid.c') throw new InvalidId(data);
+      throw new InvalidInputData(error, data);
     }
 
-    return Promise.reject(new DatabaseError(error));
+    throw new DatabaseError(error);
   }
 
   _onNotFoundError(id) {
-    return Promise.reject(new EntityNotFound(id, this._storeName));
+    throw new EntityNotFound(id, this._storeName);
   }
 }
 
