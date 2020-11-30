@@ -1,0 +1,26 @@
+{
+  "name": "loquillo-wallet",
+  "version": "1.0.0",
+  "description": "A wallet of mine",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesusx21/loquillo-wallet.git"
+  },
+  "keywords": [
+    "wallet"
+  ],
+  "author": "Jesus Agustin Peña Meza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jesusx21/loquillo-wallet/issues"
+  },
+  "homepage": "https://github.com/jesusx21/loquillo-wallet#readme",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "knex": "^0.21.12"
+  }
+}
