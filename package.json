@@ -21,6 +21,7 @@
     "app-root-path": "^3.0.0",
     "camelcase-keys": "^6.2.2",
     "dotenv": "^8.2.0",
+    "joi": "^17.3.0",
     "knex": "^0.21.12",
     "lodash.isempty": "^4.4.0",
     "lodash.omit": "^4.5.0",
