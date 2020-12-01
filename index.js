@@ -1,5 +1,5 @@
-const config = require('./config');
-const buildApp = require('./server/app')
+const config = require('./infrastructure/config');
+const buildApp = require('./infrastructure/app')
 const buildDatabase = require('./database');
 const drivers = require('./database/drivers');
 const entitiesBuilder = require('./domain/entities');
