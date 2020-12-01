@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/jesusx21/loquillo-wallet#readme",
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "camelcase-keys": "^6.2.2",
+    "hapi": "^18.1.0",
     "knex": "^0.21.12",
     "lodash.isempty": "^4.4.0",
     "lodash.omit": "^4.5.0",
