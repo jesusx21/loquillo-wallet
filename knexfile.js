@@ -4,7 +4,7 @@ module.exports = {
   test: {
     client: 'postgresql',
     connection: {
-      database: 'loquillo_wallet_test',
+      database: 'mr_krabz_test',
       user:     'postgres'
     },
     pool: {
@@ -19,7 +19,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'loquillo_wallet_dev',
+      database: 'mr_krabz_dev',
       user:     'postgres'
     },
     pool: {
@@ -34,7 +34,7 @@ module.exports = {
   staging: {
     client: 'postgresql',
     connection: {
-      database: 'loquillo_wallet_staging',
+      database: 'mr_krabz_staging',
       user:     'postgres'
     },
     pool: {
@@ -49,7 +49,7 @@ module.exports = {
   production: {
     client: 'postgresql',
     connection: {
-      database: 'loquillo_wallet',
+      database: 'mr_krabz',
       user:     'username',
       password: 'password'
     },
