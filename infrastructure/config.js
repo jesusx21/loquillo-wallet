@@ -1,7 +1,7 @@
 const RootPath = require('app-root-path');
 const dotenv = require('dotenv');
 
-const knexfile = require('./knexfile');
+const knexfile = require('../knexfile');
 
 function buildConfig() {
   const env = process.env.NODE_ENV;
