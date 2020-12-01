@@ -1,0 +1,19 @@
+{
+  "name": "mr-krabz",
+  "version": "1.0.0",
+  "description": "This README would normally document whatever steps are necessary to get your application up and running.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesusx21/loquillo-wallet.git"
+  },
+  "author": "Jesus Agustin Peña Meza",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jesusx21/loquillo-wallet/issues"
+  },
+  "homepage": "https://github.com/jesusx21/loquillo-wallet#readme"
+}
