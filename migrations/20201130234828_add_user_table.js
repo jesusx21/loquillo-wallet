@@ -5,6 +5,8 @@ exports.up = function(knex) {
     table.text('email');
     table.jsonb('password');
 
+    table.unique('email');
+
     table.timestamps(true, true);
   });
 };
