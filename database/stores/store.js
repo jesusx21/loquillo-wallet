@@ -21,10 +21,9 @@ class Store {
     let record;
 
     try {
-      record = await this._connection(this._tableName)
+      [record] = await this._connection(this._tableName)
       .insert(dataToSave)
-      .returning('*')
-      .first();
+      .returning('*');
     } catch(error) {
       return this._onUnexpectedError(error, data)
     }
@@ -109,7 +108,9 @@ class Store {
     });
   }
 
-  _formatInputData(data) {
+  _formatInputData(entity, fielsToOmit = []) {
+    const data = { ...omit(entity.toJSON(), fielsToOmit) }
+
     return snakeObject(data, { deep: true });
   }
 

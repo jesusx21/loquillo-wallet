@@ -2,7 +2,7 @@ const RootPath = require('app-root-path');
 
 const routes = require(`${RootPath}/delivery/routes`);
 
-function loadRoutes(server, database) {
+function loadRoutes(server, database, password) {
   Object.keys(routes)
     .forEach((endpoint) => {
       const [method, path] = endpoint.split(' ');
@@ -11,17 +11,19 @@ function loadRoutes(server, database) {
       server.route({
         path,
         method,
-        handler: buildHandler(method, database, controller),
+        handler: buildHandler(method, database, password, controller),
         options: buildOptions(payloadSchema)
       });
     });
 }
 
-function buildHandler(method, database, controller) {
+function buildHandler(method, database, password, controller) {
   return async (request, h) => {
     const now = new Date();
 
     request.database = database;
+    request.password = password;
+
     let payload;
     let statusCode;
 
