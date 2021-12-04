@@ -16,3 +16,5 @@ class Password {
       .digest('hex');
   }
 }
+
+module.exports = Password

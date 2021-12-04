@@ -7,6 +7,10 @@ class User extends Entity {
 
     this._entityName = 'User';
   }
+
+  setPassword(password) {
+    this._password = password;
+  }
 }
 
 module.exports = User;

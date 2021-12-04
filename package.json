@@ -4,7 +4,16 @@
   "description": "This README would normally document whatever steps are necessary to get your application up and running.",
   "main": "index.js",
   "scripts": {
+    "start": "better-npm-run start",
     "test": "test"
+  },
+  "betterScripts": {
+    "start": {
+      "command": "nodemon index.js",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -19,6 +28,7 @@
   "dependencies": {
     "@hapi/hapi": "^20.0.3",
     "app-root-path": "^3.0.0",
+    "better-npm-run": "^0.1.1",
     "camelcase-keys": "^6.2.2",
     "dotenv": "^8.2.0",
     "joi": "^17.3.0",
@@ -26,6 +36,7 @@
     "lodash.isempty": "^4.4.0",
     "lodash.omit": "^4.5.0",
     "lodash.snakecase": "^4.1.1",
+    "nodemon": "^2.0.6",
     "pg": "^8.5.1",
     "snakecase-keys": "^3.2.1",
     "verror": "^1.10.0"

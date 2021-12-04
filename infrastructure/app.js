@@ -3,10 +3,10 @@ const Hapi = require('@hapi/hapi');
 const loadRoutes = require('./load-routes');
 
 function app(args) {
-  const { database, host, port } = args;
+  const { database, password, host, port } = args;
   const server = Hapi.server({ port, host });
 
-  loadRoutes(server, database);
+  loadRoutes(server, database, password);
 
   return server;
 }
