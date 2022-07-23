@@ -1,0 +1,8 @@
+require_relative('sql_alchemy/analize_table')
+require_relative('sql_alchemy/entities/column')
+require_relative('sql_alchemy/database')
+require_relative('sql_alchemy/entities/table')
+require_relative('sql_alchemy/entities/schema')
+require_relative('sql_alchemy/migrations')
+require_relative('sql_alchemy/migration')
+require_relative('sql_alchemy/schema')
