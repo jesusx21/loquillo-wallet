@@ -1,5 +1,7 @@
+from lib2to3.pgen2 import driver
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from database.stores.memory import InMemoryDatabase
 from database.stores.sql import SQLDatabase
 
 
@@ -13,5 +15,7 @@ def get_database(config):
         engine = create_async_engine(config.get_sql_database_connection_url())
 
         return SQLDatabase(engine)
+    elif driver_name == 'memory':
+        return InMemoryDatabase()
     else:
         raise UnsupportedDatbaseDriverName(driver_name)
