@@ -1,6 +1,5 @@
 import os
 
-
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
 from tests.config import TestConfig
