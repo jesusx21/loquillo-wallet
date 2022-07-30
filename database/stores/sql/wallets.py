@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.exc import NoResultFound
 
-from database.tables.wallets import Wallets
+from database.tables import Wallets
 from database.stores.errors import DatabaseError, InvalidId, WalletNotFound
 
 
@@ -16,7 +16,7 @@ class WalletsStore:
             .values(name=name)
 
         try:
-            cursor = self._execute(statement)
+            cursor = await self._execute(statement)
         except Exception as error:
             raise DatabaseError(error)
 
