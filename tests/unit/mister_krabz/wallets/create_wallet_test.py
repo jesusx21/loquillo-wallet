@@ -1,5 +1,4 @@
 from unittest.mock import patch
-from venv import create
 from tests import TestCase
 
 from mister_krabz.wallets import CreateWallet

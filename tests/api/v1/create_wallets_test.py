@@ -4,7 +4,7 @@ from unittest.mock import patch
 from database.stores.errors import DatabaseError
 
 
-class TestWallets(TestCase):
+class TestCreateWallets(TestCase):
     def test_create_wallet(self):
         payload = {'name': 'Debit'}
         result = self.simulate_post('/MrKrabz/api/v1/wallets', json=payload)

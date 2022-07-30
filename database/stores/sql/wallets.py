@@ -39,6 +39,18 @@ class WalletsStore:
         except Exception as error:
             raise DatabaseError(error)
 
+    async def find_all(self):
+        statement = Wallets \
+            .select()
+
+        try:
+            cursor = await self._execute(statement)
+            result = map(dict, cursor.all())
+        except Exception as error:
+            raise DatabaseError(error)
+
+        return list(result)
+
     async def _execute(self, statement):
         async with self._engine.begin() as connection:
             return await connection.execute(statement)

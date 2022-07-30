@@ -14,3 +14,6 @@ class WalletsStore:
             return await self._store.find_by_id(id)
         except NotFound:
             raise WalletNotFound(id)
+
+    async def find_all(self):
+        return await self._store.find_all()

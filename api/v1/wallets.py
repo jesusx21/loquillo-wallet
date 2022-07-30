@@ -1,10 +1,10 @@
-from curses.ascii import HT
 from humps import camelize
 
-from falcon import HTTP_CREATED
+from falcon import HTTP_CREATED, HTTP_OK
 
 from app.errors import HTTPBadRequest, HTTPInternalServerError
 from mister_krabz.wallets import CreateWallet
+from mister_krabz.wallets import GetWallets
 
 
 class WalletsResource:
@@ -26,3 +26,14 @@ class WalletsResource:
 
         resp.status = HTTP_CREATED
         resp.media = camelize(wallet)
+
+    async def on_get(self, _req, resp):
+        get_wallets = GetWallets(self._database)
+
+        try:
+            wallets = await get_wallets.run()
+        except Exception as error:
+            raise HTTPInternalServerError(cause=error)
+
+        resp.status = HTTP_OK
+        resp.media = camelize(wallets)
