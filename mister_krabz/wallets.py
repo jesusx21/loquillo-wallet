@@ -21,7 +21,6 @@ class Wallets:
             raise CouldntCreateWallet(error)
 
     async def update(self, id, name=None):
-        
         try:
             wallet = await self._database.wallets.find_by_id(id)
         except WalletDoesNotExist as error:
