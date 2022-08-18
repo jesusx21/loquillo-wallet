@@ -1,8 +1,14 @@
 from unittest.mock import patch
+from uuid import uuid4
 from tests import TestCase
 
 from mister_krabz import Wallets
-from mister_krabz.errors import CouldntCreateWallet, CouldntGetWallets
+from mister_krabz.errors import (
+    CouldntCreateWallet,
+    CouldntGetWallets,
+    CouldntUpdateWallets,
+    WalletNotFound
+)
 
 
 class TestWallet(TestCase):
@@ -32,6 +38,48 @@ class TestCreateWallet(TestWallet):
 
             with self.assertRaises(CouldntCreateWallet):
                 await self.wallets.create(name='credit')
+
+
+class TestUpdateWallet(TestWallet):
+    async def test_update_wallet(self):
+        self.wallet['name'] = 'Another Name'
+
+        wallet = await self.wallets.update(self.wallet)
+
+        self.assert_that(wallet['id']).is_equal_to(self.wallet['id'])
+        self.assert_that(wallet['name']).is_equal_to('Another Name')
+
+    async def test_error_on_unexistent_wallet(self):
+        wallet = {'id': uuid4()}
+
+        with self.assertRaises(WalletNotFound):
+            await self.wallets.update(wallet)
+
+    async def test_error_unexpected_when_creating_wallet(self):
+        with patch.object(self.database.wallets, 'update') as mock:
+            mock.side_effect = Exception('error')
+
+            with self.assertRaises(CouldntUpdateWallets):
+                await self.wallets.update(self.wallet)
+
+
+class TestGetWalletById(TestWallet):
+    async def test_get_wallet_by_id(self):
+        wallet = await self.wallets.get_by_id(self.wallet['id'])
+
+        self.assert_that(wallet['id']).is_equal_to(self.wallet['id'])
+        self.assert_that(wallet['name']).is_equal_to(self.wallet['name'])
+
+    async def test_error_on_unexistent_wallet(self):
+        with self.assertRaises(WalletNotFound):
+            await self.wallets.get_by_id(uuid4())
+
+    async def test_error_unexpected_when_creating_wallet(self):
+        with patch.object(self.database.wallets, 'find_by_id') as mock:
+            mock.side_effect = Exception('error')
+
+            with self.assertRaises(CouldntGetWallets):
+                await self.wallets.get_by_id(self.wallet['id'])
 
 
 class TestGetWallets(TestWallet):

@@ -1,4 +1,4 @@
-from database.stores.errors import NotFound, WalletNotFound
+from database.stores.errors import InvalidId, NotFound, WalletNotFound
 from database.stores.memory.store import MemoryStore
 
 
@@ -15,7 +15,13 @@ class WalletsStore:
         except NotFound:
             raise WalletNotFound(wallet.id)
 
-    async def update(self, wallet):
+    async def update(self, data):
+        if 'id' not in data:
+            raise InvalidId(None)
+
+        wallet = await self.find_by_id(data['id'])
+        wallet['name'] = data['name']
+
         try:
             return await self._store.update(wallet)
         except NotFound:
