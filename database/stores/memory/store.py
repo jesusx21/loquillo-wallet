@@ -31,3 +31,6 @@ class MemoryStore:
             raise NotFound()
         except Exception as error:
             raise DatabaseError(error)
+
+    async def find_all(self):
+        return list(self._items.values());

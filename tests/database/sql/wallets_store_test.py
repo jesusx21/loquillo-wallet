@@ -11,6 +11,12 @@ class TestWalletsStore(TestCase):
         await super().asyncSetUp()
 
         self.database = self.get_database()
+        self.wallet = await self.database.wallets.create(name='cash')
+
+        await self.database.wallets.create(name='debit')
+        await self.database.wallets.create(name='credit')
+        await self.database.wallets.create(name='loans')
+        await self.database.wallets.create(name='debts')
 
 
 class TestCreateWallet(TestWalletsStore):
@@ -29,11 +35,6 @@ class TestCreateWallet(TestWalletsStore):
 
 
 class TestFindWalletById(TestWalletsStore):
-    async def asyncSetUp(self):
-        await super().asyncSetUp()
-
-        self.wallet = await self.database.wallets.create(name='cash')
-
     async def test_find_by_id(self):
         wallet = await self.database.wallets.find_by_id(self.wallet['id'])
 
@@ -56,3 +57,22 @@ class TestFindWalletById(TestWalletsStore):
 
             with self.assertRaises(DatabaseError):
                 await self.database.wallets.find_by_id(self.wallet['id'])
+
+
+class TestFindAllWallets(TestWalletsStore):
+    async def test_find_all_wallets(self):
+        wallets = await self.database.wallets.find_all()
+
+        self.assert_that(wallets).is_length(5)
+
+        for wallet in wallets:
+            self.assert_that(wallet).contains_only(
+                'id', 'name', 'created_at', 'updated_at'
+            )
+
+    async def test_raise_error_on_finding_wallets(self):
+        with patch.object(self.database.wallets, '_execute') as mock:
+            mock.side_effect = Exception('An exception')
+
+            with self.assertRaises(DatabaseError):
+                await self.database.wallets.find_all()
