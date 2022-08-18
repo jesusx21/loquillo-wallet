@@ -30,7 +30,7 @@ class TestCreateWallet(TestWallet):
 
         self.assert_that(wallet.id).is_not_none()
         self.assert_that(wallet.created_at).is_not_none()
-        self.assert_that(wallet.created_at).is_not_none()
+        self.assert_that(wallet.updated_at).is_not_none()
         self.assert_that(wallet.name).is_equal_to('credit')
 
     async def test_error_unexpected_when_creating_wallet(self):
