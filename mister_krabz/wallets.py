@@ -1,4 +1,3 @@
-from tkinter import N
 from database.stores.errors import WalletNotFound as WalletDoesNotExist
 from mister_krabz.entities import Wallet
 from mister_krabz.entities.account import Account
