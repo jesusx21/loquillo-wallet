@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy.exc import NoResultFound
@@ -21,6 +22,34 @@ class WalletsStore:
             raise DatabaseError(error)
 
         return await self.find_by_id(cursor.inserted_primary_key[0])
+
+    async def update(self, wallet):
+        if 'id' not in wallet:
+            raise InvalidId(None)
+
+        wallet_id = wallet['id']
+
+        if not isinstance(wallet_id, UUID):
+            raise InvalidId(wallet_id)
+
+        statement = Wallets \
+            .update() \
+            .returning('*') \
+            .where(Wallets.c.id == wallet_id) \
+            .values(
+                name=wallet['name'],
+                updated_at=datetime.now()
+            )
+
+        try:
+            cursor = await self._execute(statement)
+
+            return dict(cursor.one())
+        except NoResultFound as error:
+            raise WalletNotFound(wallet_id) from error
+        except Exception as error:
+            raise DatabaseError(error)
+
 
     async def find_by_id(self, id):
         if not isinstance(id, UUID):

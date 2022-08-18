@@ -9,6 +9,12 @@ class WalletsStore:
     async def create(self, name):
         return await self._store.create({'name': name})
 
+    async def update(self, wallet):
+        try:
+            return await self._store.update(wallet)
+        except NotFound:
+            raise WalletNotFound(wallet['id'])
+
     async def find_by_id(self, id):
         try:
             return await self._store.find_by_id(id)
