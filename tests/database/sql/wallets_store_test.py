@@ -10,7 +10,7 @@ class TestWalletsStore(TestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
 
-        self.database = await self.get_database()
+        self.database = self.get_database()
 
 
 class TestCreateWallet(TestWalletsStore):

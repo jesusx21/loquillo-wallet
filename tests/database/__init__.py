@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from tests import TestCase
+from tests import TestCase as BaseTestCase
 
 from database.metadata import metadata
 from database import get_database
 
 
-class TestCase(TestCase):
+class TestCase(BaseTestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
 
