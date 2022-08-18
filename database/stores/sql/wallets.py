@@ -25,7 +25,6 @@ class WalletsStore:
         return await self.find_by_id(cursor.inserted_primary_key[0])
 
     async def update(self, wallet):
-        print(wallet.id)
         if not wallet.id:
             raise InvalidId(None)
 
