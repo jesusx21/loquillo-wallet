@@ -15,6 +15,12 @@ class WalletsStore:
         except NotFound:
             raise WalletNotFound(wallet.id)
 
+    async def update(self, wallet):
+        try:
+            return await self._store.update(wallet)
+        except NotFound:
+            raise WalletNotFound(wallet['id'])
+
     async def find_by_id(self, id):
         try:
             return await self._store.find_by_id(id)
