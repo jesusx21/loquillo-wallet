@@ -12,6 +12,11 @@ class AccountNotFound(NotFound):
         self.id = id
 
 
+class CategoryNotFound(NotFound):
+    def __init__(self, id):
+        self.id = id
+
+
 class WalletNotFound(NotFound):
     def __init__(self, id):
         self.id = id

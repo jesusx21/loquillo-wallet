@@ -18,7 +18,7 @@ class SQLStore:
             .returning('*')
 
         try:
-            cursor = await self._execute(statement)
+            cursor = await self.execute(statement)
         except Exception as error:
             raise DatabaseError(error)
 
@@ -43,7 +43,7 @@ class SQLStore:
             )
 
         try:
-            cursor = await self._execute(statement)
+            cursor = await self.execute(statement)
 
             return dict(cursor.one())
         except NoResultFound as error:
@@ -57,13 +57,16 @@ class SQLStore:
 
         return self.find_one(self._table.c.id == id)
 
-    async def find_list(self, *query):
-        statement = self._table \
-            .select() \
-            .where(*query)
+    async def find_list(self, *args, **kwargs):
+        if 'statement' in kwargs:
+            statement = kwargs['statement']
+        else:
+            statement = self._table \
+                .select() \
+                .where(*args)
 
         try:
-            cursor = await self._execute(statement)
+            cursor = await self.execute(statement)
             result = map(dict, cursor.all())
         except Exception as error:
             raise DatabaseError(error)
@@ -76,7 +79,7 @@ class SQLStore:
             .where(*query)
 
         try:
-            cursor = await self._execute(statement)
+            cursor = await self.execute(statement)
 
             return dict(cursor.one())
         except NoResultFound as error:
@@ -84,6 +87,6 @@ class SQLStore:
         except Exception as error:
             raise DatabaseError(error)
 
-    async def _execute(self, statement):
+    async def execute(self, statement):
         async with self._engine.begin() as connection:
             return await connection.execute(statement)
