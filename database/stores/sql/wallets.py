@@ -53,11 +53,11 @@ class WalletsStore:
     async def find_by_id(self, id):
         if not isinstance(id, UUID):
             raise InvalidId(id)
-
+        
         statement = Wallets \
             .select() \
-            .where(Wallets.c.id == id)
-
+            .where(Wallet.c.id == id)
+        
         try:
             cursor = await self._execute(statement)
 
@@ -91,7 +91,3 @@ class WalletsStore:
         data = map(self.build_wallet, result)
 
         return list(data)
-
-    async def _execute(self, statement):
-        async with self._engine.begin() as connection:
-            return await connection.execute(statement)

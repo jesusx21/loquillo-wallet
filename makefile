@@ -13,3 +13,9 @@ install-dev:
 
 start-dev:
 	@$(UVICORN) $(UVICORN_DEV_FLAGS) --host 0.0.0.0 --port 8080 server:app
+
+install:
+	@$(PIP) install -r requirements.txt
+
+install-dev:
+	@$(PIP) install -r requirements/dev.txt

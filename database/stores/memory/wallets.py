@@ -15,18 +15,6 @@ class WalletsStore:
         except NotFound:
             raise WalletNotFound(wallet.id)
 
-    async def update(self, data):
-        if 'id' not in data:
-            raise InvalidId(None)
-
-        wallet = await self.find_by_id(data['id'])
-        wallet['name'] = data['name']
-
-        try:
-            return await self._store.update(wallet)
-        except NotFound:
-            raise WalletNotFound(wallet['id'])
-
     async def find_by_id(self, id):
         try:
             return await self._store.find_by_id(id)
@@ -34,4 +22,4 @@ class WalletsStore:
             raise WalletNotFound(id)
 
     async def find_all(self):
-        return await self._store.find_all()
+        return await self._store.find_list()

@@ -16,7 +16,9 @@ class Wallets:
         wallet = Wallet(name=name)
 
         try:
-            return await self._database.wallets.create(wallet)
+            # TODO: Put all this into a database transaction
+            wallet_created = await self._database.wallets.create(wallet)
+            await self._database.accounts.create(name='Transactions', wallet=wallet_created)
         except Exception as error:
             raise CouldntCreateWallet(error)
 

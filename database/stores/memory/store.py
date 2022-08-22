@@ -51,5 +51,12 @@ class MemoryStore:
         except Exception as error:
             raise DatabaseError(error)
 
-    async def find_all(self):
-        return list(self._items.values());
+    async def find_list(self, callback=None):
+        data = list(self._items.values());
+
+        if not callback:
+            return data
+
+        result = filter(callback, data)
+
+        return list(result)

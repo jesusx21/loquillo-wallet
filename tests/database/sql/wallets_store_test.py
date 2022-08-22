@@ -143,7 +143,7 @@ class TestFindWalletById(TestWalletsStore):
             await self.database.wallets.find_by_id('invalid-id')
 
     async def test_raise_error_on_finding_wallet_by_id(self):
-        with patch.object(self.database.wallets, '_execute') as mock:
+        with patch.object(self.database.wallets._store, '_execute') as mock:
             mock.side_effect = Exception('An exception')
 
             with self.assertRaises(DatabaseError):
@@ -157,7 +157,7 @@ class TestFindAllWallets(TestWalletsStore):
         self.assert_that(wallets).is_length(5)
 
     async def test_raise_error_on_finding_wallets(self):
-        with patch.object(self.database.wallets, '_execute') as mock:
+        with patch.object(self.database.wallets._store, '_execute') as mock:
             mock.side_effect = Exception('An exception')
 
             with self.assertRaises(DatabaseError):
