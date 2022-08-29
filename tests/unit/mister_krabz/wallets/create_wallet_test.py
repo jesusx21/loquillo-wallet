@@ -16,14 +16,16 @@ class TestCreateWallet(TestCase):
 
         wallet = await create_wallet.run()
 
-        self.assert_that(wallet['id']).is_not_none()
-        self.assert_that(wallet['name']).is_equal_to('credit')
+        self.assert_that(wallet.id).is_not_none()
+        self.assert_that(wallet.created_at).is_not_none()
+        self.assert_that(wallet.created_at).is_not_none()
+        self.assert_that(wallet.name).is_equal_to('credit')
 
     async def test_error_unexpected_when_creating_wallet(self):
         create_wallet = CreateWallet(self.database, name='credit')
 
         with patch.object(self.database.wallets, 'create') as mock:
-            mock.side_effect = Exception('error')
+            mock.side_effect = Exception()
 
             with self.assertRaises(CouldnCreateWallet):
                 await create_wallet.run()
