@@ -2,6 +2,7 @@ import os
 
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
+from mister_krabz.entities import Wallet
 from tests.config import TestConfig
 
 from database import get_database
@@ -17,6 +18,11 @@ class TestCase(IsolatedAsyncioTestCase):
 
     def assert_that(self, value):
         return assert_that(value)
+
+    def create_wallet(self, database, name):
+        wallet = Wallet(name=name)
+
+        return database.wallets.create(wallet)
 
     def _get_config(self):
         return TestConfig(self._get_config_path())

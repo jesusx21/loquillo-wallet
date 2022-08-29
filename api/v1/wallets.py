@@ -1,3 +1,4 @@
+from unittest import result
 from humps import camelize
 
 from falcon import HTTP_CREATED, HTTP_OK
@@ -25,7 +26,7 @@ class WalletsResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_CREATED
-        resp.media = camelize(wallet)
+        resp.media = self.format_wallet(wallet)
 
     async def on_get(self, _req, resp):
         get_wallets = GetWallets(self._database)
@@ -36,4 +37,17 @@ class WalletsResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_OK
-        resp.media = camelize(wallets)
+        resp.media = self.format_wallets(wallets)
+
+    def format_wallet(self, wallet):
+        return {
+            'id': wallet.id,
+            'name': wallet.name,
+            'createdAt': wallet.created_at,
+            'updatedAt': wallet.updated_at
+        }
+
+    def format_wallets(self, wallets):
+        result = map(self.format_wallet, wallets)
+
+        return list(result)

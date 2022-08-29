@@ -6,14 +6,14 @@ class WalletsStore:
     def __init__(self):
         self._store = MemoryStore()
 
-    async def create(self, name):
-        return await self._store.create({'name': name})
+    async def create(self, wallet):
+        return await self._store.create(wallet)
 
     async def update(self, wallet):
         try:
             return await self._store.update(wallet)
         except NotFound:
-            raise WalletNotFound(wallet['id'])
+            raise WalletNotFound(wallet.id)
 
     async def find_by_id(self, id):
         try:

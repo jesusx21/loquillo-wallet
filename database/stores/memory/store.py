@@ -9,43 +9,43 @@ class MemoryStore:
     def __init__(self):
         self._items = dict()
 
-    async def create(self, data):
-        data['id'] = uuid4()
-        data['created_at'] = datetime.now(timezone.utc)
-        data['updated_at'] = datetime.now(timezone.utc)
+    async def create(self, entity):
+        entity.id = uuid4()
+        entity.created_at = datetime.now(timezone.utc)
+        entity.updated_at = datetime.now(timezone.utc)
 
-        self._items[str(data['id'])] = data
+        self._items[str(entity.id)] = entity
 
         try:
-            return deepcopy(self._items[str(data['id'])])
+            return deepcopy(self._items[str(entity.id)])
         except Exception as error:
             raise DatabaseError(error)
 
-    async def update(self, record):
-        if 'id' not in record:
+    async def update(self, entity):
+        if not entity.id:
             raise InvalidId(None)
 
-        record_id = str(record['id'])
+        entity_id = str(entity.id)
 
-        if not isinstance(record['id'], UUID):
-            raise InvalidId(record['id'])
+        if not isinstance(entity.id, UUID):
+            raise InvalidId(entity.id)
 
-        record = self._items[record_id]
+        entity = self._items[entity_id]
 
-        if not record:
+        if not entity:
             return NotFound()
 
-        record['updated_at'] = datetime.now()
-        self._items[record_id] = record
+        entity.updated_at = datetime.now()
+        self._items[entity_id] = entity
 
-        return record
+        return entity
 
     async def find_by_id(self, item_id):
         if not isinstance(item_id, UUID):
             raise InvalidId(item_id)
 
         try:
-            return deepcopy(self._items[str(item_id)])
+            return self._items[str(item_id)]
         except KeyError:
             raise NotFound()
         except Exception as error:
