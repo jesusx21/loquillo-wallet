@@ -1,4 +1,4 @@
-from database.stores.errors import NotFound, WalletNotFound
+from database.stores.errors import InvalidId, NotFound, WalletNotFound
 from database.stores.memory.store import MemoryStore
 
 
