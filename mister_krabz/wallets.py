@@ -20,11 +20,17 @@ class Wallets:
         except Exception as error:
             raise CouldntCreateWallet(error)
 
-    async def update(self, data):
+    async def update(self, id, name=None):
+        
         try:
-            wallet = await self._database.wallets.update(data)
+            wallet = await self._database.wallets.find_by_id(id)
         except WalletDoesNotExist as error:
             raise WalletNotFound(id)
+        
+        wallet.name = name
+
+        try:
+            wallet = await self._database.wallets.update(wallet)
         except Exception as error:
             raise CouldntUpdateWallets(error)
 
@@ -32,13 +38,11 @@ class Wallets:
 
     async def get_by_id(self, id):
         try:
-            wallet = await self._database.wallets.find_by_id(id)
+           return await self._database.wallets.find_by_id(id)
         except WalletDoesNotExist as error:
             raise WalletNotFound(id)
         except Exception as error:
             raise CouldntGetWallets(error)
-
-        return wallet
 
     async def get_list(self):
         try:

@@ -19,16 +19,12 @@ class WalletResource:
         data = await req.media
 
         try:
-            wallet = await self._wallets.update({
-                'id': wallet_id,
-                'name': data['name']
-            })
+            wallet = await self._wallets.update(wallet_id, data['name'])
         except WalletNotFound:
             raise HTTPNotFound('WALLET_NOT_FOUND')
         except Exception as error:
             raise HTTPInternalServerError(cause=error)
 
-        print(wallet, HTTP_OK)
         resp.status = HTTP_OK
         resp.media = self.format_wallet(wallet)
 
@@ -50,8 +46,8 @@ class WalletResource:
 
     def format_wallet(self, wallet):
         return {
-            'id': str(wallet['id']),
-            'name': wallet['name'],
-            'createdAt': wallet['created_at'],
-            'updatedAt': wallet['updated_at']
+            'id': str(wallet.id),
+            'name': wallet.name,
+            'createdAt': wallet.created_at,
+            'updatedAt': wallet.updated_at
         }
