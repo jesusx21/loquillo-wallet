@@ -17,6 +17,8 @@ class TestCase(BaseTestCase):
             await connection.run_sync(metadata.create_all)
 
     async def asyncTearDown(self):
+        await super().asyncTearDown()
+
         async with self.engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)
 

@@ -17,7 +17,7 @@ class MemoryStore:
         self._items[str(entity.id)] = entity
 
         try:
-            return deepcopy(self._items[str(entity.id)])
+            return self._items[str(entity.id)]
         except Exception as error:
             raise DatabaseError(error)
 

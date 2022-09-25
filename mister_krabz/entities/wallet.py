@@ -1,7 +1,6 @@
 from mister_krabz.entities.entity import Entity
 
 
-class PrivateField(Exception): pass
 class WalletAccountAlreadySet(Exception): pass
 class WalletAccountNotSet(Exception): pass
 
@@ -14,12 +13,7 @@ class Wallet(Entity):
         self._account = account
         self._wallet_account = wallet_account
     
-    @property
-    def wallet_account(self):
-        raise PrivateField()
-    
-    @wallet_account.setter
-    def wallet_account(self, wallet_account):
+    def set_wallet_account(self, wallet_account):
         if self._wallet_account:
             raise WalletAccountAlreadySet()
 

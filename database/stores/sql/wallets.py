@@ -92,7 +92,9 @@ class WalletsStore:
             updated_at=data['updated_at']
         )
 
-        wallet.wallet_account = WalletAccount(self._db, wallet, data['account_id'])
+        wallet.set_wallet_account(
+            WalletAccount(self._db, wallet, data['account_id'])
+        )
 
         return wallet
 
