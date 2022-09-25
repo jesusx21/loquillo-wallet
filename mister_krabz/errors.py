@@ -7,3 +7,4 @@ class WalletNotFound(Exception): pass # noqa
 class CouldntCreateCategory(Exception): pass # noqa
 class CouldntGetCategories(Exception): pass # noqa
 class CategoryNotFound(Exception): pass # noqa
+class ParentCategoryNotFound(Exception): pass # noqa

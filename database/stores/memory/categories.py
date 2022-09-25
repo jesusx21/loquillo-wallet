@@ -1,4 +1,4 @@
-from database.stores.errors import InvalidId, NotFound, CategoryNotFound
+from database.stores.errors import NotFound, CategoryNotFound
 from database.stores.memory.store import MemoryStore
 
 
@@ -6,8 +6,8 @@ class CategoriesStore:
     def __init__(self):
         self._store = MemoryStore()
 
-    def create(self, name):
-        return self._store.create(name=name)
+    def create(self, category):
+        return self._store.create(category)
 
     async def find_by_id(self, id):
         try:

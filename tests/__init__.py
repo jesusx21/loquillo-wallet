@@ -2,7 +2,7 @@ import os
 
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
-from mister_krabz.entities.account import Account
+from mister_krabz.entities import Account, Category
 from tests.config import TestConfig
 
 from database import get_database
@@ -24,6 +24,11 @@ class TestCase(IsolatedAsyncioTestCase):
         account = Account(name=f'{name} Transactions')
 
         return database.accounts.create(account)
+
+    def create_category(self, database, name):
+        category = Category(name=name)
+
+        return database.categories.create(category)
 
     def create_wallet(self, database, name):
         wallets = Wallets(database)

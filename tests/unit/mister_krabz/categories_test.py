@@ -17,17 +17,19 @@ class TestCategory(TestCase):
         self.database = self.get_database()
         self.categories = Categories(self.database)
 
-        self.category = await self.database.categories.create(name='Purchase')
-        await self.database.categories.create(name='Transport')
-        await self.database.categories.create(name='Bills')
+        self.category = await self.create_category(self.database, name='Purchase')
+        await self.create_category(self.database, name='Transport')
+        await self.create_category(self.database, name='Bills')
 
 
 class TestCreateCategory(TestCategory):
     async def test_create_category(self):
         category = await self.categories.create(name='Shopping')
 
-        self.assert_that(category['id']).is_not_none()
-        self.assert_that(category['name']).is_equal_to('Shopping')
+        self.assert_that(category.id).is_not_none()
+        self.assert_that(category.name).is_equal_to('Shopping')
+        self.assert_that(category.created_at).is_not_none()
+        self.assert_that(category.updated_at).is_not_none()
 
     async def test_error_unexpected_when_creating_category(self):
         with patch.object(self.database.categories, 'create') as mock:
@@ -39,10 +41,12 @@ class TestCreateCategory(TestCategory):
 
 class TestGetCategoryById(TestCategory):
     async def test_get_category_by_id(self):
-        category = await self.categories.get_by_id(self.category['id'])
+        category = await self.categories.get_by_id(self.category.id)
 
-        self.assert_that(category['id']).is_equal_to(self.category['id'])
-        self.assert_that(category['name']).is_equal_to(self.category['name'])
+        self.assert_that(category.id).is_equal_to(self.category.id)
+        self.assert_that(category.name).is_equal_to(self.category.name)
+        self.assert_that(category.created_at).is_equal_to(self.category.created_at)
+        self.assert_that(category.updated_at).is_equal_to(self.category.updated_at)
 
     async def test_error_on_unexistent_category(self):
         with self.assertRaises(CategoryNotFound):
@@ -53,7 +57,7 @@ class TestGetCategoryById(TestCategory):
             mock.side_effect = Exception('error')
 
             with self.assertRaises(CouldntGetCategories):
-                await self.categories.get_by_id(self.category['id'])
+                await self.categories.get_by_id(self.category.id)
 
 
 class TestGetCategories(TestCategory):
@@ -61,11 +65,6 @@ class TestGetCategories(TestCategory):
         categories = await self.categories.get_list()
 
         self.assert_that(categories).is_length(3)
-
-        for category in categories:
-            self.assert_that(category).contains_only(
-                'id', 'name', 'created_at', 'updated_at'
-            )
 
     async def test_error_unexpected_when_getting_categories(self):
         with patch.object(self.database.categories, 'find_all') as mock:

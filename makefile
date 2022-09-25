@@ -19,3 +19,6 @@ migrations-create:
 
 migrations-run:
 	@$(ALEMBIC) upgrade head
+
+migrations-rollback:
+	@$(ALEMBIC) downgrade -${migrations}

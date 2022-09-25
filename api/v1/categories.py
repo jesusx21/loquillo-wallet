@@ -1,5 +1,3 @@
-from humps import camelize
-
 from falcon import HTTP_CREATED, HTTP_OK
 
 from app.errors import HTTPBadRequest, HTTPInternalServerError
@@ -21,7 +19,7 @@ class CategoriesResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_CREATED
-        resp.media = camelize(category)
+        resp.media = self.format_category(category)
 
     async def on_get(self, _req, resp):
         try:
@@ -30,4 +28,17 @@ class CategoriesResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_OK
-        resp.media = camelize(categories)
+        resp.media = self.format_categories(categories)
+
+    def format_category(self, category):
+        return {
+            'id': str(category.id),
+            'name': category.name,
+            'createdAt': category.created_at,
+            'updatedAt': category.updated_at
+        }
+
+    def format_categories(self, categories):
+        result = map(self.format_category, categories)
+
+        return list(result)

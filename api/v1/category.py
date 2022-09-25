@@ -28,8 +28,8 @@ class CategoryResource:
 
     def format_category(self, category):
         return {
-            'id': str(category['id']),
-            'name': category['name'],
-            'createdAt': category['created_at'],
-            'updatedAt': category['updated_at']
+            'id': str(category.id),
+            'name': category.name,
+            'createdAt': category.created_at,
+            'updatedAt': category.updated_at
         }

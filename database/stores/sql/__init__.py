@@ -8,7 +8,7 @@ class SQLDatabase:
         self._engine = engine
 
         self.accounts = AccountsStore(self, engine)
-        self.categories = CategoriesStore(engine)
+        self.categories = CategoriesStore(self, engine)
         self.wallets = WalletsStore(self, engine)
 
 

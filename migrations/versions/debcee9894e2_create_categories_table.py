@@ -1,8 +1,8 @@
 """create_categories_table
 
-Revision ID: 9f8634d0a6e5
-Revises: fcfcd49b63b7
-Create Date: 2022-08-21 22:13:11.332607
+Revision ID: debcee9894e2
+Revises: 0e7238102135
+Create Date: 2022-09-24 23:49:00.603939
 
 """
 from alembic import op
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 import database
 
 # revision identifiers, used by Alembic.
-revision = '9f8634d0a6e5'
-down_revision = 'fcfcd49b63b7'
+revision = 'debcee9894e2'
+down_revision = '0e7238102135'
 branch_labels = None
 depends_on = None
 
@@ -23,16 +23,21 @@ def upgrade():
     op.create_table('categories',
         sa.Column('id', database.types.guid.GUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
         sa.Column('name', sa.String(length=256), nullable=False),
+        sa.Column('parent_category_id', database.types.guid.GUID(), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+        sa.ForeignKeyConstraint(['parent_category_id'], ['categories.id'], ),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_table('wallets_categories',
-        sa.Column('wallet_id', database.types.guid.GUID(), nullable=False),
+        sa.Column('id', database.types.guid.GUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
+        sa.Column('account_id', database.types.guid.GUID(), nullable=False),
         sa.Column('category_id', database.types.guid.GUID(), nullable=False),
+        sa.Column('wallet_id', database.types.guid.GUID(), nullable=False),
+        sa.ForeignKeyConstraint(['account_id'], ['accounts.id'], ),
         sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
         sa.ForeignKeyConstraint(['wallet_id'], ['wallets.id'], ),
-        sa.PrimaryKeyConstraint('wallet_id', 'category_id')
+        sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 
