@@ -26,7 +26,7 @@ class TestCase(FalconTestCase):
         return assert_that(value)
 
     def get_database(self):
-        return get_database(self._config)
+        return self.app.get_database()
 
     def wait_for(self, task):
         if not self._is_loop_running():
