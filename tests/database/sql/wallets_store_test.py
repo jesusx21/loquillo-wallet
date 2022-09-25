@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from unittest.mock import patch
 from mister_krabz.entities import Wallet
+from mister_krabz.entities.wallet_category import WalletCategory
 from tests.database import TestCase
 
 from database.stores.errors import DatabaseError, InvalidId, WalletNotFound
@@ -108,3 +109,38 @@ class TestFindAllWallets(TestWalletsStore):
 
             with self.assertRaises(DatabaseError):
                 await self.database.wallets.find_all()
+
+
+class TestAddCategory(TestWalletsStore):
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
+
+        account = await self.create_account(self.database, 'Sale Transactions')
+        category = await self.create_category(self.database, 'Sale')
+        self.wallet_category = WalletCategory(self.wallet, category, account)
+    
+    async def test_add_category(self):
+        wallet_category = await self.database.wallets.add_category(self.wallet_category)
+
+        self.assert_that(wallet_category.id).is_not_none()
+        self.assert_that(wallet_category._wallet.id).is_equal_to(self.wallet_category._wallet.id)
+        self.assert_that(wallet_category._category.id).is_equal_to(self.wallet_category._category.id)
+        self.assert_that(wallet_category._account.id).is_equal_to(self.wallet_category._account.id)
+    
+    async def test_add_category_with_not_existent_wallet(self):
+        self.wallet_category._wallet.id = uuid4()
+        
+        with self.assertRaises(DatabaseError):
+            await self.database.wallets.add_category(self.wallet_category)
+    
+    async def test_add_category_with_not_existent_category(self):
+        self.wallet_category._category.id = uuid4()
+        
+        with self.assertRaises(DatabaseError):
+            await self.database.wallets.add_category(self.wallet_category)
+    
+    async def test_add_category_with_not_existent_account(self):
+        self.wallet_category._account.id = uuid4()
+        
+        with self.assertRaises(DatabaseError):
+            await self.database.wallets.add_category(self.wallet_category)

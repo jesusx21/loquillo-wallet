@@ -8,3 +8,6 @@ class CouldntCreateCategory(Exception): pass # noqa
 class CouldntGetCategories(Exception): pass # noqa
 class CategoryNotFound(Exception): pass # noqa
 class ParentCategoryNotFound(Exception): pass # noqa
+
+
+class CouldNotAddCategory(Exception): pass # noqa
