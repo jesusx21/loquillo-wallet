@@ -1,5 +1,6 @@
 from api.v1.categories import CategoriesResource
 from api.v1.category import CategoryResource
+from api.v1.subcategories import SubcategoriesResource
 from api.v1.wallet import WalletResource
 from api.v1.wallets import WalletsResource
 
@@ -17,10 +18,12 @@ class MisterKrabzApp:
 
         categories_resource = CategoriesResource(categories)
         category_resource = CategoryResource(categories)
+        subcategories_resource = SubcategoriesResource(categories)
         wallet_resource = WalletResource(wallets)
         wallets_resource = WalletsResource(wallets)
 
         self._app.register_resource('categories', categories_resource)
         self._app.register_resource('categories/{category_id}', category_resource)
+        self._app.register_resource('categories/{category_id}/subcategories', subcategories_resource)
         self._app.register_resource('wallets', wallets_resource)
         self._app.register_resource('wallets/{wallet_id}', wallet_resource)
