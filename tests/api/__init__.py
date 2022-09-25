@@ -4,11 +4,11 @@ from assertpy import assert_that
 from falcon.testing import TestCase as FalconTestCase
 from tests.config import TestConfig
 
+from tests import TestCase as BaseTestCase
 from app import create_app
-from database import get_database
 
 
-class TestCase(FalconTestCase):
+class TestCase(FalconTestCase, BaseTestCase):
     def setUp(self):
         super().setUp()
 

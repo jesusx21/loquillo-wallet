@@ -5,9 +5,10 @@ from database.stores.memory.store import MemoryStore
 class WalletsStore:
     def __init__(self):
         self._store = MemoryStore()
+        self._wallet_category_store = MemoryStore()
 
-    async def create(self, wallet):
-        return await self._store.create(wallet)
+    def create(self, wallet):
+        return self._store.create(wallet)
 
     async def update(self, wallet):
         try:
@@ -21,5 +22,8 @@ class WalletsStore:
         except NotFound:
             raise WalletNotFound(id)
 
-    async def find_all(self):
-        return await self._store.find_list()
+    def find_all(self):
+        return self._store.find_list()
+    
+    def add_category(self, wallet_category):
+        return self._wallet_category_store.create(wallet_category)

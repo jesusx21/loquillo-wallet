@@ -1,7 +1,12 @@
-from database.stores.errors import WalletNotFound as WalletDoesNotExist
-from mister_krabz.entities import Wallet
+from mister_krabz.entities import Wallet, WalletCategory
 from mister_krabz.entities.account import Account
+from database.stores.errors import (
+    CategoryNotFound as CategoryDoesNotExist,
+    WalletNotFound as WalletDoesNotExist
+)
 from mister_krabz.errors import (
+    CategoryNotFound,
+    CouldNotAddCategory,
     CouldntCreateWallet,
     CouldntGetWallets,
     CouldntUpdateWallets,
@@ -12,6 +17,35 @@ from mister_krabz.errors import (
 class Wallets:
     def __init__(self, database):
         self._database = database
+    
+    async def add_category(self, wallet_id, category_id):
+        try:
+           wallet = await self._database.wallets.find_by_id(wallet_id)
+        except WalletDoesNotExist:
+            raise WalletNotFound(id)
+        except Exception as error:
+            raise CouldNotAddCategory(error)
+
+        try:
+            category = await self._database.categories.find_by_id(category_id)
+        except CategoryDoesNotExist:
+            raise CategoryNotFound(category_id)
+        except Exception as error:
+            raise CouldNotAddCategory(error)
+
+        try:
+            account = await self._database.accounts.create(
+                Account(name=category.name)
+            )
+        except Exception as error:
+            raise CouldNotAddCategory(error)
+
+        wallet_category = WalletCategory(wallet, category, account)
+
+        try:
+            return await self._database.wallets.add_category(wallet_category)
+        except Exception as error:
+            raise CouldNotAddCategory(error)
 
     async def create(self, name):
         account = Account(name=f'{name} Transactions')
@@ -28,7 +62,7 @@ class Wallets:
     async def update(self, id, name=None):
         try:
             wallet = await self._database.wallets.find_by_id(id)
-        except WalletDoesNotExist as error:
+        except WalletDoesNotExist:
             raise WalletNotFound(id)
         
         wallet.name = name
@@ -55,3 +89,4 @@ class Wallets:
             raise CouldntGetWallets(error)
 
         return wallets
+    

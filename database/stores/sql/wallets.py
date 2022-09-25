@@ -3,10 +3,10 @@ from uuid import UUID
 
 from sqlalchemy.exc import NoResultFound
 
-from database.tables import Wallets
+from database.tables import Wallets, WalletsCategories
 from database.stores.errors import DatabaseError, InvalidId, WalletNotFound
 from mister_krabz.core.wallet_account import WalletAccount
-from mister_krabz.entities import Wallet
+from mister_krabz.entities import Wallet, wallet
 
 
 class WalletsStore:
@@ -79,6 +79,23 @@ class WalletsStore:
         try:
             cursor = await self._execute(statement)
             return self._build_wallets(cursor.all())
+        except Exception as error:
+            raise DatabaseError(error)
+    
+    async def add_category(self, wallet_category):        
+        statement = WalletsCategories \
+            .insert() \
+            .values(
+                wallet_id=wallet_category._wallet.id,
+                category_id=wallet_category._category.id,
+                account_id=wallet_category._account.id
+            )
+
+        try:
+            cursor = await self._execute(statement)
+            wallet_category.id = cursor.inserted_primary_key[0]
+
+            return wallet_category
         except Exception as error:
             raise DatabaseError(error)
 

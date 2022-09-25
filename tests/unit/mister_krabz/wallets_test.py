@@ -1,9 +1,11 @@
 from unittest.mock import patch
 from uuid import uuid4
+from mister_krabz.entities import wallet_category
 from tests import TestCase
 
 from mister_krabz import Wallets
 from mister_krabz.errors import (
+    CategoryNotFound,
     CouldntCreateWallet,
     CouldntGetWallets,
     CouldntUpdateWallets,
@@ -98,3 +100,26 @@ class TestGetWallets(TestWallet):
 
             with self.assertRaises(CouldntGetWallets):
                 await self.wallets.get_list()
+
+
+class TestAddCategory(TestWallet):
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
+
+        self.category = await self.create_category(self.database, 'Sale')
+    
+    async def test_add_category(self):
+        wallet_category = await self.wallets.add_category(self.wallet.id, self.category.id)
+
+        self.assert_that(wallet_category._wallet.id).is_equal_to(self.wallet.id)
+        self.assert_that(wallet_category._category.id).is_equal_to(self.category.id)
+        self.assert_that(wallet_category._account.id).is_not_none()
+    
+    async def test_error_when_wallet_was_not_found(self):
+        with self.assertRaises(WalletNotFound):
+            await self.wallets.add_category(uuid4(), self.category.id)
+    
+    async def test_error_when_category_was_not_found(self):
+        with self.assertRaises(CategoryNotFound):
+            await self.wallets.add_category(self.wallet.id, uuid4())
+
