@@ -35,13 +35,10 @@ class TestCreateWallet(TestWallet):
 
     async def test_create_account_when_creating_a_wallet(self):
         wallet = await self.wallets.create(name='credit')
-        accounts = await self.database.accounts.find_by_wallet_id(wallet['id'])
-        account = accounts[0]
+        account = await wallet.get_account()
 
-        self.assert_that(accounts).is_length(1)
-        self.assert_that(account['id']).is_not_none()
-        self.assert_that(account['wallet_id']).is_equal_to(wallet['id'])
-        self.assert_that(account['name']).is_equal_to('Transactions')
+        self.assert_that(account.id).is_not_none()
+        self.assert_that(account.name).is_equal_to('credit Transactions')
 
     async def test_error_unexpected_when_creating_wallet(self):
         with patch.object(self.database.wallets, 'create') as mock:

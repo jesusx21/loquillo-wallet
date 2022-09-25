@@ -6,8 +6,8 @@ class SQLDatabase:
     def __init__(self, engine):
         self._engine = engine
 
-        self.accounts = AccountsStore(engine)
-        self.wallets = WalletsStore(engine)
+        self.accounts = AccountsStore(self, engine)
+        self.wallets = WalletsStore(self, engine)
 
 
 __all__ = [
