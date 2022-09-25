@@ -2,10 +2,11 @@ import os
 
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
-from mister_krabz.entities import Wallet
+from mister_krabz.entities.account import Account
 from tests.config import TestConfig
 
 from database import get_database
+from mister_krabz import Wallets
 
 
 class TestCase(IsolatedAsyncioTestCase):
@@ -19,10 +20,15 @@ class TestCase(IsolatedAsyncioTestCase):
     def assert_that(self, value):
         return assert_that(value)
 
-    def create_wallet(self, database, name):
-        wallet = Wallet(name=name)
+    def create_account(self, database, name):
+        account = Account(name=f'{name} Transactions')
 
-        return database.wallets.create(wallet)
+        return database.accounts.create(account)
+
+    def create_wallet(self, database, name):
+        wallets = Wallets(database)
+
+        return wallets.create(name=name)
 
     def _get_config(self):
         return TestConfig(self._get_config_path())

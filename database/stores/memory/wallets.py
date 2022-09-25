@@ -22,4 +22,4 @@ class WalletsStore:
             raise WalletNotFound(id)
 
     async def find_all(self):
-        return await self._store.find_all()
+        return await self._store.find_list()

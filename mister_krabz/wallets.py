@@ -1,5 +1,7 @@
+from tkinter import N
 from database.stores.errors import WalletNotFound as WalletDoesNotExist
 from mister_krabz.entities import Wallet
+from mister_krabz.entities.account import Account
 from mister_krabz.errors import (
     CouldntCreateWallet,
     CouldntGetWallets,
@@ -13,15 +15,18 @@ class Wallets:
         self._database = database
 
     async def create(self, name):
-        wallet = Wallet(name=name)
+        account = Account(name=f'{name} Transactions')
 
         try:
+            # TODO: Put all this into a database transaction
+            account = await self._database.accounts.create(account)
+            wallet = Wallet(name, account=account)
+
             return await self._database.wallets.create(wallet)
         except Exception as error:
             raise CouldntCreateWallet(error)
 
     async def update(self, id, name=None):
-        
         try:
             wallet = await self._database.wallets.find_by_id(id)
         except WalletDoesNotExist as error:

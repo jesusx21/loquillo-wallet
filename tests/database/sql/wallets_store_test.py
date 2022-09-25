@@ -24,7 +24,8 @@ class TestCreateWallet(TestWalletsStore):
     async def asyncSetUp(self):
         await super().asyncSetUp()
 
-        self.wallet = Wallet(name='cash')
+        account = await self.create_account(self.database, 'Cash')
+        self.wallet = Wallet(name='cash', account=account)
 
     async def test_create_wallet(self):
         wallet = await self.database.wallets.create(self.wallet)
@@ -69,34 +70,6 @@ class TestUpdateWallet(TestWalletsStore):
 
         with self.assertRaises(WalletNotFound):
             await self.database.wallets.update(self.wallet)
-
-class TestUpdateWallet(TestWalletsStore):
-    async def test_update_wallet(self):
-        self.wallet.name = 'Name Updated'
-
-        wallet = await self.database.wallets.update(self.wallet)
-
-        self.assert_that(wallet.id).is_equal_to(self.wallet.id)
-        self.assert_that(wallet.name).is_equal_to('Name Updated')
-
-    async def test_error_on_missing_id(self):
-        self.wallet.id = None
-
-        with self.assertRaises(InvalidId):
-            await self.database.wallets.update(self.wallet)
-
-    async def test_error_on_invalid_id(self):
-        self.wallet.id = 'invalid_id'
-
-        with self.assertRaises(InvalidId):
-            await self.database.wallets.update(self.wallet)
-
-    async def test_error_on_wallet_not_found(self):
-        self.wallet.id = uuid4()
-
-        with self.assertRaises(WalletNotFound):
-            await self.database.wallets.update(self.wallet)
-
 
 class TestFindWalletById(TestWalletsStore):
     async def test_find_by_id(self):
