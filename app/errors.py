@@ -87,6 +87,7 @@ class HTTPConflict(HTTPError):
 
 class HTTPInternalServerError(HTTPError):
     def __init__(self, cause=None, headers=None):
+        print('error', cause)
         super().__init__(
             status.HTTP_500,
             'UNEXPECTED_ERROR',
