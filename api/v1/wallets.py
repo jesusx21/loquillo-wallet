@@ -1,5 +1,3 @@
-import json
-
 from falcon import HTTP_CREATED, HTTP_OK
 
 from app.errors import HTTPBadRequest, HTTPInternalServerError
@@ -33,12 +31,12 @@ class WalletsResource:
         resp.media = self._format_wallets(wallets)
 
     def _format_wallet(self, wallet):
-        return({
-            'id': wallet.id,
+        return {
+            'id': str(wallet.id),
             'name': wallet.name,
             'createdAt': wallet.created_at,
             'updatedAt': wallet.updated_at
-        })
+        }
 
     def _format_wallets(self, wallets):
         result = map(self._format_wallet, wallets)
