@@ -17,6 +17,11 @@ class CategoryNotFound(NotFound):
         self.id = id
 
 
+class EntryNotFound(NotFound):
+    def __init__(self, id):
+        self.id = id
+
+
 class WalletNotFound(NotFound):
     def __init__(self, id):
         self.id = id

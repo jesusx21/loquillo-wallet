@@ -1,7 +1,7 @@
-PIP := pip
-UVICORN := uvicorn
-ALEMBIC := alembic
-FLAKE8 := flake8
+PIP ?= python3 -m pip
+UVICORN ?= uvicorn
+ALEMBIC ?= alembic
+FLAKE8 ?= flake8
 
 UVICORN_DEV_FLAGS := --reload
 

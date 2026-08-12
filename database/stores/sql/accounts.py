@@ -5,7 +5,7 @@ from sqlalchemy.exc import NoResultFound
 
 from database.tables import Accounts
 from database.stores.errors import AccountNotFound, DatabaseError, InvalidId
-from mister_krabz.entities.account import Account
+from mister_krabz.entities import DetailAccount, SummaryAccount
 
 
 class AccountsStore:
@@ -16,7 +16,11 @@ class AccountsStore:
     async def create(self, account):
         statement = Accounts \
             .insert() \
-            .values(name=account.name) \
+            .values(
+                name=account.name,
+                type=account.type,
+                parent_id=account.parent_id
+            ) \
             .returning('*')
 
         try:
@@ -71,12 +75,22 @@ class AccountsStore:
     def _build_account(self, result):
         data = dict(result)
 
-        return Account(
-            id=data['id'],
-            name=data['name'],
-            created_at=data['created_at'],
-            updated_at=data['updated_at']
-        )
+        if data['type'] == 'summary':
+            return SummaryAccount(
+                id=data['id'],
+                name=data['name'],
+
+                created_at=data['created_at'],
+                updated_at=data['updated_at']
+            )
+        else:
+            return DetailAccount(
+                id=data['id'],
+                name=data['name'],
+                parent_id=data['parent_id'],
+                created_at=data['created_at'],
+                updated_at=data['updated_at']
+            )
 
     async def _execute(self, statement):
         async with self._engine.begin() as connection:

@@ -19,7 +19,8 @@ class WalletsStore:
             .insert() \
             .values(
                 name=wallet.name,
-                account_id=wallet._account.id
+                type=wallet.type,
+                account_id=wallet.account_id,
             ) \
             .returning('*')
 

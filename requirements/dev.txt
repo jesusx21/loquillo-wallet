@@ -1,8 +1,8 @@
 -r common.txt
-aioresponses==0.7.1
-assertpy==1.1
-flake8==3.8.4
-freezegun==1.1.0
-logassert==6
-nose2==0.10.0
-tox==3.21.4
+aioresponses==0.7.8
+assertpy==1.2.0
+flake8==7.3.0
+freezegun==1.5.1
+logassert==7
+nose2==0.15.1
+tox==4.27.0

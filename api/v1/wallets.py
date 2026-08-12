@@ -1,6 +1,3 @@
-from unittest import result
-from humps import camelize
-
 from falcon import HTTP_CREATED, HTTP_OK
 
 from app.errors import HTTPBadRequest, HTTPInternalServerError
@@ -22,7 +19,7 @@ class WalletsResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_CREATED
-        resp.media = self.format_wallet(wallet)
+        resp.media = self._format_wallet(wallet)
 
     async def on_get(self, _req, resp):
         try:
@@ -31,17 +28,17 @@ class WalletsResource:
             raise HTTPInternalServerError(cause=error)
 
         resp.status = HTTP_OK
-        resp.media = self.format_wallets(wallets)
+        resp.media = self._format_wallets(wallets)
 
-    def format_wallet(self, wallet):
+    def _format_wallet(self, wallet):
         return {
-            'id': wallet.id,
+            'id': str(wallet.id),
             'name': wallet.name,
             'createdAt': wallet.created_at,
             'updatedAt': wallet.updated_at
         }
 
-    def format_wallets(self, wallets):
-        result = map(self.format_wallet, wallets)
+    def _format_wallets(self, wallets):
+        result = map(self._format_wallet, wallets)
 
         return list(result)

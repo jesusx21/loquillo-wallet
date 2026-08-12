@@ -32,7 +32,7 @@ target_metadata = metadata
 
 def get_database_url():
     return Config('./config.ini') \
-        .get_sql_database_connection_url('pygresql')
+        .get_sql_database_connection_url('psycopg')
 
 
 def run_migrations_offline():

@@ -47,13 +47,13 @@ class Wallets:
         except Exception as error:
             raise CouldNotAddCategory(error)
 
-    async def create(self, name):
-        account = Account(name=f'{name} Transactions')
+    async def create(self, name, account_type):
+        account = Account(name=f'{name} Transactions', type='detail')
 
         try:
             # TODO: Put all this into a database transaction
             account = await self._database.accounts.create(account)
-            wallet = Wallet(name, account=account)
+            wallet = Wallet(name, account_type, account=account)
 
             return await self._database.wallets.create(wallet)
         except Exception as error:
