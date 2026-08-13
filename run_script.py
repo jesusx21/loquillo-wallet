@@ -22,29 +22,25 @@ async def main():
 
     await load_database(database)
 
-    accounts = await database.accounts.find_list()
+    wallets = await database.wallets.find_list()
 
-    accounts_choices = [f'{account.id}: {account.name}' for account in accounts]
+    wallet_choices = [f'{wallet.id}: {wallet.name}' for wallet in wallets]
 
     questions = [
-        inquirer.Text(
-            'description',
-            message="Type the transaction description",
-        ),
         inquirer.Text(
             'amount',
             message="Type the transaction amount",
         ),
         inquirer.List(
-            'source_account',
-            message="Select the source account",
-            choices=accounts_choices,
+            'source_wallet',
+            message="Select the source wallet",
+            choices=wallet_choices,
             carousel=True
         ),
         inquirer.List(
-            'target_account',
-            message="Select the target account",
-            choices=accounts_choices,
+            'target_wallet',
+            message="Select the target wallet",
+            choices=wallet_choices,
             carousel=True
         )
     ]
@@ -53,16 +49,18 @@ async def main():
     answers = await asyncio.to_thread(inquirer.prompt, questions)
 
     try:
-        source_account_id = UUID(answers['source_account'].split(': ')[0])
-        source_account = await database.accounts.find_by_id(source_account_id)
+        source_wallet_id = UUID(answers['source_wallet'].split(': ')[0])
+        source_wallet = await database.wallets.find_by_id(source_wallet_id)
+        source_account = source_wallet.account
     except DatabaseError as error:
         raise CouldNotFindSourceAccount() from error
     except Exception as error:
         raise UnexpectedError() from error
 
     try:
-        target_account_id = UUID(answers['target_account'].split(': ')[0])
-        target_account = await database.accounts.find_by_id(target_account_id)
+        target_wallet_id = UUID(answers['target_wallet'].split(': ')[0])
+        target_wallet = await database.wallets.find_by_id(target_wallet_id)
+        target_account = target_wallet.account
     except DatabaseError as error:
         raise CouldNotFindTargetAccount() from error
     except Exception as error:
@@ -72,7 +70,7 @@ async def main():
 
     try:
         transaction = await database.transactions.create(
-            Transaction(answers['description'])
+            Transaction(f'Transfer from {source_account.name} to {target_account.name}', transaction_amount)
         )
 
         source_entry = await database.entries.create(

@@ -23,3 +23,8 @@ class EntryNotFound(NotFound):
 class TransactionNotFound(NotFound):
     def __init__(self, id: UUID):
         self.id = id
+
+
+class WalletNotFound(NotFound):
+    def __init__(self, id: UUID):
+        self.id = id

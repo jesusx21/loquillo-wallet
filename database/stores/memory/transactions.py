@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from .store import MemoryStore
 from database.stores.errors import NotFound, TransactionNotFound
 from domain.entities import Transaction
-from .store import MemoryStore
 
 
 class MemoryTransactionsStore(MemoryStore[Transaction]):

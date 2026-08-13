@@ -1,13 +1,20 @@
 from datetime import datetime
+from enum import Enum
 from uuid import UUID
 
 from .entity import Entity
+
+
+class AccountType(str, Enum):
+    DETAIL = "detail"
+    SUMMARY = "summary"
+
 
 class Account(Entity):
     def __init__(
         self,
         name: str,
-        type: str,
+        type: AccountType,
         id: UUID=None,
         created_at: datetime=None,
         updated_at: datetime=None

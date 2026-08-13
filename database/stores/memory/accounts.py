@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from .store import MemoryStore
 from database.stores.errors import AccountNotFound, NotFound
 from domain.entities import Account
-from .store import MemoryStore
 
 
 class MemoryAccountsStore(MemoryStore[Account]):
@@ -17,4 +17,3 @@ class MemoryAccountsStore(MemoryStore[Account]):
             return await super().find_by_id(id)
         except NotFound:
             raise AccountNotFound(id)
-    

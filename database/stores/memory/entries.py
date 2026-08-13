@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from .store import MemoryStore
 from database.stores.errors import EntryNotFound, NotFound
 from domain.entities import Entry
-from .store import MemoryStore
 
 
 class MemoryEntriesStore(MemoryStore[Entry]):

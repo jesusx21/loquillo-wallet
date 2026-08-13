@@ -1,6 +1,7 @@
 from .accounts import MemoryAccountsStore
 from .entries import MemoryEntriesStore
 from .transactions import MemoryTransactionsStore
+from .wallets import MemoryWalletsStore
 
 
 class InMemoryDatabase:
@@ -8,3 +9,4 @@ class InMemoryDatabase:
         self.accounts = MemoryAccountsStore()
         self.entries = MemoryEntriesStore()
         self.transactions = MemoryTransactionsStore()
+        self.wallets = MemoryWalletsStore()
