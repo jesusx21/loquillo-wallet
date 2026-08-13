@@ -2,7 +2,7 @@ import asyncio
 import inquirer
 from uuid import UUID
 
-from fixtures import load_database
+from .fixtures import load_database
 from database import get_database
 from database.stores.errors import DatabaseError
 from domain.entities import Entry, Transaction

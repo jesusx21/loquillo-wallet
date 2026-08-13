@@ -11,7 +11,7 @@ This repository is a small starter for a wallet-style app. It contains core doma
 - `domain/` — business logic layer (entities, services, use-cases). Prefer this for domain rules instead of `app` or the project name.
 - `fixtures/` — test/demo data and seeding helpers.
 - `database/` — storage adapters and tables (memory/sql stores).
-- `run_script.py` — interactive example that seeds data and creates a transaction.
+ - `run_script/` — interactive example package that seeds data and creates a transaction. It is runnable with `python -m run_script`.
 - `requirements.txt` — pinned dependencies used for development and examples.
 
 ## Python version
@@ -43,13 +43,29 @@ Note: some packages (for example `orjson`) may require Rust/toolchain to build f
 
 ## Run the example (interactive)
 
-`run_script.py` is async and uses an interactive prompt. It runs with the event loop and executes the blocking prompt in a background thread, so running it is as simple as:
+The interactive runner lives in the `run_script` package and is executed as a module so relative imports work correctly. There is a `Makefile` that centralizes build artifacts and provides convenient targets:
 
 ```bash
-python run_script.py
+# install dependencies
+make install
+
+# run the interactive example (creates .build/pycache)
+make run
+
+# run tests (redirects pycache)
+make test
+
+# clean build artifacts
+make clean
 ```
 
-If your system Python command is `python3` or you prefer a specific interpreter, call that binary instead.
+If you prefer not to use `make`, run the package directly with:
+
+```bash
+PYTHONPYCACHEPREFIX=$(pwd)/.build/pycache python -m run_script
+```
+
+`PYTHONPYCACHEPREFIX` centralizes `__pycache__` files under `.build/pycache`. You can also disable bytecode generation with `PYTHONDONTWRITEBYTECODE=1`.
 
 ## Domain layer
 

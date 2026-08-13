@@ -6,7 +6,7 @@ install:
 
 run:
 	@mkdir -p .build/pycache
-	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(PYTHON) run_script.py
+	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(PYTHON) -m run_script
 
 test:
 	@mkdir -p .build/pycache
