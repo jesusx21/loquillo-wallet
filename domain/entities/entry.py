@@ -9,12 +9,12 @@ class Entry(Entity):
     def __init__(
         self,
         account: Account,
-        transaction_id: UUID,
         concept: str,
-        amount: float,
-        id: UUID = None,
-        created_at: datetime = None,
-        updated_at: datetime = None,
+        amount: int,
+        id: UUID | None = None,
+        transaction_id: UUID | None = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
     ):
         super().__init__(id, created_at, updated_at)
 

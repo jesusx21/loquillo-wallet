@@ -67,38 +67,33 @@ async def main():
     except Exception as error:
         raise UnexpectedError() from error
 
-    transaction_amount = float(answers['amount'])
+    transaction_amount = float(answers['amount']) * 100
 
     try:
-        transaction = await database.transactions.create(
-            Transaction(
-                f'Transfer from {source_account.name} to {target_account.name}', transaction_amount
-            )
+        transaction = Transaction(
+            f'Transfer from {source_account.name} to {target_account.name}'
         )
 
-        source_entry = await database.entries.create(
+        transaction.add_entries(
             Entry(
                 account=source_account,
-                transaction_id=transaction.id,
                 concept=f"Transfer to {target_account.name}",
-                amount=-transaction_amount,
+                amount=-transaction_amount
+            ),
+            Entry(
+                account=target_account,
+                concept=f"Transfer from {source_account.name}",
+                amount=transaction_amount
             )
         )
 
-        target_entry = await database.entries.create(
-            Entry(
-                account=target_account,
-                transaction_id=transaction.id,
-                concept=f"Transfer from {source_account.name}",
-                amount=transaction_amount,
-            )
-        )
+        transaction = await database.transactions.create(transaction)
     except Exception as error:
         raise UnexpectedError() from error
 
     print(f"Transaction created: {transaction.description}")
-    for entry in [source_entry, target_entry]:
-        print(f"{entry.concept}: ${entry.amount}")
+    for entry in transaction.entries:
+        print(f"{entry.concept}: ${entry.amount / 100.0}")
 
 
 if __name__ == "__main__":

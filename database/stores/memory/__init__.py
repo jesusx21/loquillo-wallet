@@ -8,5 +8,5 @@ class InMemoryDatabase:
     def __init__(self):
         self.accounts = MemoryAccountsStore()
         self.entries = MemoryEntriesStore()
-        self.transactions = MemoryTransactionsStore()
+        self.transactions = MemoryTransactionsStore(self)
         self.wallets = MemoryWalletsStore()

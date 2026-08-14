@@ -15,9 +15,9 @@ class Account(Entity):
         self,
         name: str,
         type: AccountType,
-        id: UUID = None,
-        created_at: datetime = None,
-        updated_at: datetime = None
+        id: UUID | None = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None
     ):
         super().__init__(id, created_at, updated_at)
 
