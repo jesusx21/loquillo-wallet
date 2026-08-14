@@ -1,8 +1,12 @@
 from uuid import UUID
 
 
-class DatabaseError(Exception): pass # noqa
-class NotFound(DatabaseError): pass # noqa
+class DatabaseError(Exception):
+    pass  # noqa
+
+
+class NotFound(DatabaseError):
+    pass  # noqa
 
 
 class InvalidId(DatabaseError):

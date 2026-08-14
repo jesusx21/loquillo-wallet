@@ -1,7 +1,7 @@
 from database.stores.memory import InMemoryDatabase
-
 from domain.use_cases import CreateWallet
-from .wallets import wallets
+from run_script.fixtures.wallets import wallets
+
 
 async def load_database(database: InMemoryDatabase):
     for wallet_data in wallets:

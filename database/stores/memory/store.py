@@ -1,16 +1,16 @@
 from copy import deepcopy
 from datetime import datetime, timezone
-from typing import TypeVar, Generic
-from uuid import uuid4, UUID
+from typing import Generic, TypeVar
+from uuid import UUID, uuid4
 
-from database.stores.errors import DatabaseError, InvalidId, NotFound
+from database.stores.errors import InvalidId, NotFound
 
 Entity = TypeVar('Entity')
 
 
 class MemoryStore(Generic[Entity]):
     def __init__(self):
-        self._items: dict[str, Entity] = dict()
+        self._items: dict[str, Entity] = {}
 
     async def create(self, entity: Entity) -> Entity:
         entity.id = uuid4()
@@ -19,10 +19,7 @@ class MemoryStore(Generic[Entity]):
 
         self._items[str(entity.id)] = deepcopy(entity)
 
-        try:
-            return self._items[str(entity.id)]
-        except Exception as error:
-            raise DatabaseError(error)
+        return self._items[str(entity.id)]
 
     async def update(self, entity: Entity) -> Entity:
         if not entity.id:
@@ -49,10 +46,8 @@ class MemoryStore(Generic[Entity]):
 
         try:
             return deepcopy(self._items[str(item_id)])
-        except KeyError:
-            raise NotFound()
-        except Exception as error:
-            raise DatabaseError(error)
+        except KeyError as error:
+            raise NotFound() from error
 
     async def find_list(self, callback=None) -> list[Entity]:
         data = deepcopy(list(self._items.values()))

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from domain.entities.account import Account
+from .account import Account
 from .entity import Entity
 
 
@@ -15,7 +15,7 @@ class Wallet(Entity):
         self,
         name: str,
         type: WalletType,
-        account: Account=None,
+        account: Account = None,
         id=None,
         created_at=None,
         updated_at=None

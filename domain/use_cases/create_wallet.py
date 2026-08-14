@@ -1,15 +1,11 @@
 from database.stores.memory import InMemoryDatabase
-from domain.entities import DetailAccount, Wallet
+from domain.entities import DetailAccount
 from domain.entities.wallet import Wallet, WalletType
 from domain.errors import CouldNotCreateAccount, CouldNotCreateWallet
 
 
 class CreateWallet:
-    def __init__(self,
-        database: InMemoryDatabase,
-        name: str,
-        type: WalletType
-    ):
+    def __init__(self, database: InMemoryDatabase, name: str, type: WalletType):
         self._database = database
         self._name = name
         self._wallet_type = type
@@ -19,9 +15,7 @@ class CreateWallet:
         wallet = Wallet(self._name, self._wallet_type, account)
 
         try:
-            return await self._database. \
-                wallets. \
-                create(wallet)
+            return await self._database.wallets.create(wallet)
         except Exception as error:
             raise CouldNotCreateWallet(cause=error) from error
 

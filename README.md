@@ -4,108 +4,108 @@ Minimal personal-finance starter project in Python.
 
 ## Overview
 
-This repository is a small starter for a wallet-style app. It contains core domain entities, a tiny async-backed runner (`run_script.py`), fixture data, and simple stores that demonstrate the app structure.
+This repository is a small wallet-style starter app. It includes the domain model, an example runner, fixtures, and in-memory persistence to demonstrate how the project is structured.
 
-## Project layout (high level)
+## Project layout
 
-- `domain/` — business logic layer (entities, services, use-cases). Prefer this for domain rules instead of `app` or the project name.
-- `fixtures/` — test/demo data and seeding helpers.
-- `database/` — storage adapters and tables (memory/sql stores).
- - `run_script/` — interactive example package that seeds data and creates a transaction. It is runnable with `python -m run_script`.
-- `requirements.txt` — pinned dependencies used for development and examples.
+- `domain/` — business-logic layer: entities, services, and use cases.
+- `database/` — persistence adapters and table definitions.
+- `run_script/` — runnable example that seeds data and creates a sample transaction.
+- `tests/` — unit/integration-style tests.
+- `requirements/` — dependency files for runtime and development installs.
 
 ## Python version
 
-The target Python version is declared in `.python-version`. We recommend using a maintained CPython (3.10+) or the version in the file via `pyenv`.
+The project targets Python 3.10+ and is expected to run with the version defined in `.python-version` via `pyenv`.
 
 ## Install dependencies
 
-Recommended quick install:
+For development work, install the dev requirements explicitly:
 
 ```bash
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install -r requirements.txt
+python -m pip install -r requirements/dev.txt
 ```
 
-If you use `pyenv`:
+Use the production file only when you specifically want the runtime-only environment:
 
 ```bash
-# install pyenv and pyenv-virtualenv (example macOS via Homebrew)
-# brew install pyenv pyenv-virtualenv
+python -m pip install -r requirements/production.txt
+```
 
-# initialize pyenv in your shell, then:
+Or use the provided Make targets:
+
+```bash
+make install-dev
+make install-prod
+```
+
+If you are using `pyenv`, you can do this:
+
+```bash
 pyenv install 3.13.5
 pyenv local 3.13.5
-python -m pip install -r requirements.txt
+make install-dev
 ```
 
-Note: some packages (for example `orjson`) may require Rust/toolchain to build from source; see Troubleshooting below.
+## Run the example
 
-## Run the example (interactive)
-
-The interactive runner lives in the `run_script` package and is executed as a module so relative imports work correctly. There is a `Makefile` that centralizes build artifacts and provides convenient targets:
+The runner is executed as a module so imports resolve correctly:
 
 ```bash
-# install dependencies
-make install
-
-# run the interactive example (creates .build/pycache)
 make run
-
-# run tests (redirects pycache)
-make test
-
-# clean build artifacts
-make clean
 ```
 
-If you prefer not to use `make`, run the package directly with:
+Or directly:
 
 ```bash
 PYTHONPYCACHEPREFIX=$(pwd)/.build/pycache python -m run_script
 ```
 
-`PYTHONPYCACHEPREFIX` centralizes `__pycache__` files under `.build/pycache`. You can also disable bytecode generation with `PYTHONDONTWRITEBYTECODE=1`.
+`PYTHONPYCACHEPREFIX` keeps Python bytecode under `.build/pycache` instead of scattering it across the repo.
 
-## Domain layer
+## Quality checks
 
-The `domain/` package holds the core business logic: entities (`domain/entities`), services (`domain/services.py`), and possible repository interfaces. This keeps rules and invariants isolated from persistence and transport concerns.
-
-Suggested internal layout:
-
-- `domain/entities.py` or `domain/entities/` — entity classes and value objects
-- `domain/services.py` — orchestrating use-cases and application facades
-- `domain/repositories.py` — repository interfaces/adapters (optional)
-
-Naming rationale: `domain` avoids collision with `app` or configuration modules and aligns with Domain‑Driven Design conventions.
-
-## Troubleshooting
-
-- If `python` is not found or points to the wrong interpreter, run the script with `python3` or the full pyenv path.
-- If installation of a wheel fails and the error references `maturin`/`cargo`, install Rust (`rustup`) locally:
+The project uses Flake8 for linting and keeps the workflow manual instead of auto-fixing code on commit:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source "$HOME/.cargo/env"
-python -m pip install -r requirements.txt
+make lint
+```
+
+This runs:
+
+```bash
+python -m flake8 .
+```
+
+If you want to review the rule set only, you can use:
+
+```bash
+make lint-fixes
 ```
 
 ## Tests
 
-There are unit and integration style tests under `tests/`. Run them with your test runner (nose2 is present in dev requirements):
+The project includes nose2-based tests.
 
 ```bash
-# run nose2 tests
-nose2
+make test
 ```
+
+Or directly:
+
+```bash
+python -m nose2
+```
+
+## Cleanup
+
+```bash
+make clean
+```
+
+This removes generated cache/build artifacts such as `.build` and `.ruff_cache`.
 
 ## Contributing
 
-If you add domain logic, keep it inside `domain/` and add tests under `tests/unit` or `tests/api` depending on scope.
-
----
-
-If you want, I can:
-
-- add a short `make` target to create a venv and install deps, or
-- add a tiny demo script that prints fixture accounts to verify the environment quickly.
+Keep business rules inside `domain/` and add tests under `tests/` when changing behavior.

@@ -1,6 +1,5 @@
-from unittest.mock import patch
-
 from tests import TestCase
+from unittest.mock import patch
 
 from domain.entities import Account
 from domain.entities.wallet import WalletType
@@ -26,9 +25,7 @@ class TestCreateWallet(TestCase):
 
     async def test_create_account_when_creating_a_wallet(self):
         wallet = await self.create_wallet.execute()
-        account = await self.database \
-            .accounts \
-            .find_by_id(wallet.account.id)
+        account = await self.database.accounts.find_by_id(wallet.account.id)
 
         self.assert_that(account).is_instance_of(Account)
         self.assert_that(account.id).is_not_none()
@@ -41,7 +38,7 @@ class TestCreateWallet(TestCase):
             with self.assertRaises(CouldNotCreateAccount):
                 await self.create_wallet.execute()
 
-    async def test_error_unexpected_when_creating_account(self):
+    async def test_error_unexpected_when_creating_wallet(self):
         with patch.object(self.database.wallets, 'create') as mock:
             mock.side_effect = Exception('error')
 

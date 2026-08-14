@@ -1,8 +1,15 @@
 PYTHON ?= python
 
-install:
+install: install-dev
+
+install-prod:
 	$(PYTHON) -m pip install --upgrade pip setuptools wheel
-	$(PYTHON) -m pip install -r requirements.txt
+	if [ -f requirements/production.txt ]; then $(PYTHON) -m pip install -r requirements/production.txt; fi
+
+install-dev:
+	@echo "Installing development dependencies from requirements/dev.txt"
+	$(PYTHON) -m pip install --upgrade pip setuptools wheel
+	if [ -f requirements/dev.txt ]; then $(PYTHON) -m pip install -r requirements/dev.txt; fi
 
 run:
 	@mkdir -p .build/pycache
@@ -12,5 +19,13 @@ test:
 	@mkdir -p .build/pycache
 	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(PYTHON) -m nose2
 
+lint:
+	@mkdir -p .build/pycache
+	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(PYTHON) -m flake8 .
+
+lint-fixes:
+	@echo "Manual review only. Flake8 reports issues but does not rewrite files."
+	@echo "Use: $(PYTHON) -m flake8 ."
+
 clean:
-	@rm -rf .build
+	@rm -rf .build .ruff_cache

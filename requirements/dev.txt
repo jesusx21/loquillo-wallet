@@ -1,2 +1,4 @@
 assertpy==1.1
+flake8==7.3.0
+isort==5.12.0
 nose2==0.16.0

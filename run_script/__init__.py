@@ -1,21 +1,25 @@
 import asyncio
-import inquirer
 from uuid import UUID
 
-from .fixtures import load_database
+import inquirer
+
 from database import get_database
 from database.stores.errors import DatabaseError
 from domain.entities import Entry, Transaction
+from run_script.fixtures import load_database
 
 
 class CouldNotFindSourceAccount(Exception):
     pass
 
+
 class CouldNotFindTargetAccount(Exception):
     pass
 
+
 class UnexpectedError(Exception):
     pass
+
 
 async def main():
     database = get_database()
@@ -27,22 +31,19 @@ async def main():
     wallet_choices = [f'{wallet.id}: {wallet.name}' for wallet in wallets]
 
     questions = [
-        inquirer.Text(
-            'amount',
-            message="Type the transaction amount",
-        ),
+        inquirer.Text('amount', message="Type the transaction amount"),
         inquirer.List(
             'source_wallet',
             message="Select the source wallet",
             choices=wallet_choices,
-            carousel=True
+            carousel=True,
         ),
         inquirer.List(
             'target_wallet',
             message="Select the target wallet",
             choices=wallet_choices,
-            carousel=True
-        )
+            carousel=True,
+        ),
     ]
 
     # inquirer.prompt is blocking; run it in a thread so we don't block the loop
@@ -70,7 +71,9 @@ async def main():
 
     try:
         transaction = await database.transactions.create(
-            Transaction(f'Transfer from {source_account.name} to {target_account.name}', transaction_amount)
+            Transaction(
+                f'Transfer from {source_account.name} to {target_account.name}', transaction_amount
+            )
         )
 
         source_entry = await database.entries.create(
@@ -78,7 +81,7 @@ async def main():
                 account=source_account,
                 transaction_id=transaction.id,
                 concept=f"Transfer to {target_account.name}",
-                amount=-transaction_amount
+                amount=-transaction_amount,
             )
         )
 
@@ -87,7 +90,7 @@ async def main():
                 account=target_account,
                 transaction_id=transaction.id,
                 concept=f"Transfer from {source_account.name}",
-                amount=transaction_amount
+                amount=transaction_amount,
             )
         )
     except Exception as error:
