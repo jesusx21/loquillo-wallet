@@ -1,4 +1,7 @@
 PYTHON ?= python
+ALEMBIC ?= $(PYTHON) -m alembic -c alembic.ini
+MESSAGE ?= migration
+REVISION ?= -1
 
 install: install-dev
 
@@ -29,3 +32,12 @@ lint-fixes:
 
 clean:
 	@rm -rf .build .ruff_cache
+
+migration-make:
+	$(ALEMBIC) revision --autogenerate -m "$(MESSAGE)"
+
+migration-run:
+	$(ALEMBIC) upgrade head
+
+rollback-run:
+	$(ALEMBIC) downgrade $(REVISION)

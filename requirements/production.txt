@@ -1,1 +1,4 @@
+-r common.txt
+
+click==8.4.2
 inquirer==3.4.1
