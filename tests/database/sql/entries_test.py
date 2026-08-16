@@ -28,7 +28,7 @@ class TestCreateEntry(TestEntriesStore):
     async def async_set_up(self):
         await super().async_set_up()
 
-        self.account = await self.database.accounts.find_by_id(constants.ACCOUNT_ID)
+        self.account = await self.database.accounts.find_by_id(constants.ALBO_ACCOUNT_ID)
         self.transaction = await self.database.transactions.find_by_id(constants.TRANSACTION_ID)
 
     async def test_create_entry(self):
@@ -43,7 +43,7 @@ class TestCreateEntry(TestEntriesStore):
 
         self.assert_that(entry).is_instance_of(Entry)
         self.assert_that(entry.id).is_instance_of(UUID)
-        self.assert_that(entry.account_id).is_equal_to(constants.ACCOUNT_ID)
+        self.assert_that(entry.account_id).is_equal_to(constants.ALBO_ACCOUNT_ID)
         self.assert_that(entry.concept).is_equal_to('Coffee')
         self.assert_that(entry.amount).is_equal_to(-150)
         self.assert_that(entry.transaction_id).is_equal_to(constants.TRANSACTION_ID)
@@ -75,7 +75,7 @@ class TestFindEntryById(TestEntriesStore):
         entry = await self.database.entries.find_by_id(constants.SOURCE_ENTRY_ID)
 
         self.assert_that(entry).is_instance_of(Entry)
-        self.assert_that(entry.account_id).is_equal_to(constants.ACCOUNT_ID)
+        self.assert_that(entry.account_id).is_equal_to(constants.ALBO_ACCOUNT_ID)
         self.assert_that(entry.concept).is_equal_to('Groceries')
         self.assert_that(entry.amount).is_equal_to(-2500)
 

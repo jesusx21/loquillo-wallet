@@ -2,5 +2,6 @@ from .accounts import Accounts
 from .entries import Entries
 from .metadata import metadata
 from .transactions import Transactions
+from .wallets import Wallets
 
-__all__ = ['metadata', 'Accounts', 'Entries', 'Transactions']
+__all__ = ['metadata', 'Accounts', 'Entries', 'Transactions', 'Wallets']

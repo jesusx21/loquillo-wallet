@@ -25,7 +25,7 @@ class TestCreateWallet(TestCase):
 
     async def test_create_account_when_creating_a_wallet(self):
         wallet = await self.create_wallet.execute()
-        account = await self.database.accounts.find_by_id(wallet.account.id)
+        account = await self.database.accounts.find_by_id(wallet.account_id)
 
         self.assert_that(account).is_instance_of(Account)
         self.assert_that(account.id).is_not_none()

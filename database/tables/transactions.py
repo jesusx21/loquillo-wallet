@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Table, text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import now
-from sqlalchemy.types import DateTime, String, UUID
+from sqlalchemy.types import DateTime, String
 
 from .metadata import metadata
 

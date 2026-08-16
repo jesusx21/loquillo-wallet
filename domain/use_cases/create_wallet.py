@@ -12,7 +12,11 @@ class CreateWallet:
 
     async def execute(self):
         account = await self._create_account()
-        wallet = Wallet(self._name, self._wallet_type, account)
+        wallet = Wallet(
+            name=self._name,
+            type=self._wallet_type,
+            account_id=account.id
+        )
 
         try:
             return await self._database.wallets.create(wallet)

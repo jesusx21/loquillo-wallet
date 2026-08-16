@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from . import constants
 from database.tables import Accounts
 
@@ -8,28 +6,28 @@ account_fixtures = {
     'table': Accounts,
     'data': [
         {
-            'id': constants.ACCOUNT_ID,
-            'name': 'Credit Card Account',
+            'id': constants.ALBO_ACCOUNT_ID,
+            'name': 'Albo Account',
             'type': 'detail'
         },
         {
-            'id': uuid4(),
-            'name': 'Credit Card Account',
+            'id': constants.BBVA_ACCOUNT_ID,
+            'name': 'BBVA Account',
             'type': 'detail'
         },
         {
-            'id': uuid4(),
-            'name': 'Credit Card Account',
+            'id': constants.NU_BANK_ACCOUNT_ID,
+            'name': 'Nu Bank Account',
             'type': 'detail'
         },
         {
-            'id': uuid4(),
-            'name': 'Credit Card Account',
+            'id': constants.STORI_ACCOUNT_ID,
+            'name': 'Stori Account',
             'type': 'detail'
         },
         {
-            'id': uuid4(),
-            'name': 'Credit Card Account',
+            'id': constants.HSBC_ACCOUNT_ID,
+            'name': 'HSBC Account',
             'type': 'detail'
         }
     ]

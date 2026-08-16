@@ -73,11 +73,11 @@ class TestFindAccountById(TestAccountsStore):
         await load_fixtures(self.engine, [account_fixtures])
 
     async def test_find_by_id(self):
-        account = await self.database.accounts.find_by_id(constants.ACCOUNT_ID)
+        account = await self.database.accounts.find_by_id(constants.ALBO_ACCOUNT_ID)
 
         self.assert_that(account).is_instance_of(DetailAccount)
-        self.assert_that(account.id).is_equal_to(constants.ACCOUNT_ID)
-        self.assert_that(account.name).is_equal_to('Credit Card Account')
+        self.assert_that(account.id).is_equal_to(constants.ALBO_ACCOUNT_ID)
+        self.assert_that(account.name).is_equal_to('Albo Account')
 
     async def test_raise_error_when_account_does_not_exist(self):
         with self.assertRaises(AccountNotFound):
@@ -92,4 +92,4 @@ class TestFindAccountById(TestAccountsStore):
             mock.side_effect = Exception('An exception')
 
             with self.assertRaises(DatabaseError):
-                await self.database.accounts.find_by_id(constants.ACCOUNT_ID)
+                await self.database.accounts.find_by_id(constants.ALBO_ACCOUNT_ID)

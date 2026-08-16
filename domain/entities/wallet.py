@@ -1,13 +1,13 @@
 from enum import Enum
+from uuid import UUID
 
-from .account import Account
 from .entity import Entity
 
 
 class WalletType(str, Enum):
-    CASH = "cash"
-    DEBIT_CARD = "debit_card"
-    CREDIT_CARD = "credit_card"
+    CASH = 'cash'
+    DEBIT_CARD = 'debit_card'
+    CREDIT_CARD = 'credit_card'
 
 
 class Wallet(Entity):
@@ -15,7 +15,7 @@ class Wallet(Entity):
         self,
         name: str,
         type: WalletType,
-        account: Account = None,
+        account_id: UUID,
         id=None,
         created_at=None,
         updated_at=None
@@ -24,4 +24,4 @@ class Wallet(Entity):
 
         self.name = name
         self.type = type
-        self.account = account
+        self.account_id = account_id

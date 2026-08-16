@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from database.stores.sql.accounts import SQLAccountsStore
 from database.stores.sql.entries import SQLEntriesStore
 from database.stores.sql.transactions import SQLTransactionsStore
+from database.stores.sql.wallets import SQLWalletsStore
 
 
 class SQLDatabase:
@@ -12,3 +13,4 @@ class SQLDatabase:
         self.accounts = SQLAccountsStore(self.__engine)
         self.entries = SQLEntriesStore(self.__engine)
         self.transactions = SQLTransactionsStore(self.__engine)
+        self.wallets = SQLWalletsStore(self.__engine)
