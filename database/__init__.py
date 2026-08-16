@@ -1,5 +1,7 @@
-from .stores import InMemoryDatabase
+from .stores import Database, get_database
 
 
-def get_database() -> InMemoryDatabase:
-    return InMemoryDatabase()
+__all__ = [
+    'Database',
+    'get_database'
+]

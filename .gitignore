@@ -1,4 +1,5 @@
 config.ini
+!tests/config.ini
 **/*.pyc
 
 .vscode

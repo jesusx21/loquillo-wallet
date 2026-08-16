@@ -1,8 +1,8 @@
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
 
-from database import get_database
 from database.stores import InMemoryDatabase
+from tests.config import TestConfig
 
 
 class TestCase(IsolatedAsyncioTestCase):
@@ -15,13 +15,13 @@ class TestCase(IsolatedAsyncioTestCase):
         await super().asyncTearDown()
 
     async def async_set_up(self):
-        pass
+        self._config = TestConfig()
 
     async def async_tear_down(self):
         pass
 
     def get_database(self) -> InMemoryDatabase:
-        return get_database()
+        return InMemoryDatabase()
 
     def assert_that(self, value):
         return assert_that(value)

@@ -6,8 +6,8 @@ from .entity import Entity
 
 
 class AccountType(str, Enum):
-    DETAIL = "detail"
-    SUMMARY = "summary"
+    DETAIL = 'detail'
+    SUMMARY = 'summary'
 
 
 class Account(Entity):

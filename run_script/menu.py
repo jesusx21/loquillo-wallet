@@ -1,6 +1,6 @@
 import sys
 
-from database.stores import InMemoryDatabase
+from database import Database
 from domain.entities import Entry, Transaction, Wallet
 from domain.entities.wallet import WalletType
 
@@ -17,7 +17,7 @@ class MenuItem:
 
 
 class Menu:
-    def __init__(self, database: InMemoryDatabase):
+    def __init__(self, database: Database):
         self._database = database
 
         self.items = {

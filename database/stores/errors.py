@@ -3,7 +3,21 @@ from uuid import UUID
 
 class DatabaseError(Exception):
     def __init__(self, message: str | None = None, cause: Exception | None = None, **kwargs):
-        super().__init__(message=message or 'Unexpected database error', cause=cause, **kwargs)
+        self.cause = cause
+        self.message = message or 'Unexpected database error'
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        super().__init__(self.message)
+
+
+class UnsupportedDatabaseDriverName(DatabaseError):
+    def __init__(self, driver_name: str):
+        super().__init__(
+            message=f'Unsupported database driver name: {driver_name}',
+            driver_name=driver_name
+        )
 
 
 class NotFound(DatabaseError):

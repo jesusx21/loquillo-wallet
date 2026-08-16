@@ -33,7 +33,7 @@ lint-fixes:
 clean:
 	@rm -rf .build .ruff_cache
 
-migration-make:
+migration-create:
 	$(ALEMBIC) revision --autogenerate -m "$(MESSAGE)"
 
 migration-run:
