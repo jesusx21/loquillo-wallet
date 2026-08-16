@@ -2,10 +2,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from .errors import UnsupportedDatabaseDriverName
 from .memory import InMemoryDatabase
-from .sql import SQLDatabase
+from .sql import SQLDatabase, SQLTransactionDatabase
 from app.config import Config
 
-type Database = InMemoryDatabase | SQLDatabase
+type Database = InMemoryDatabase | SQLDatabase | SQLTransactionDatabase
 
 
 def get_database(config: Config) -> Database:

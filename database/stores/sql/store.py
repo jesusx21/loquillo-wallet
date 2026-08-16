@@ -1,9 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy import Executable as Statement, Table
+from sqlalchemy import Executable as Statement, MappingResult, Table
 from sqlalchemy.engine import Row
 from sqlalchemy.exc import NoResultFound as DoesNotExist
-from sqlalchemy.ext.asyncio import AsyncEngine
 
 from database.stores.errors import DatabaseError, InvalidId, NotFound
 
@@ -12,12 +11,12 @@ type SingleResult = Row
 
 
 class SQLStore:
-    def __init__(self, engine: AsyncEngine, table: Table):
-        self.__engine = engine
-        self._table = table
+    def __init__(self, database: object, table: Table):
+        self._database = database
+        self.__table = table
 
     async def _create(self, **data):
-        statement = self._table \
+        statement = self.__table \
             .insert() \
             .values(**data) \
             .returning('*')
@@ -33,9 +32,9 @@ class SQLStore:
         if not isinstance(entity_id, UUID):
             raise InvalidId(entity_id)
 
-        statement = self._table \
+        statement = self.__table \
             .select() \
-            .where(self._table.c.id == entity_id)
+            .where(self.__table.c.id == entity_id)
 
         try:
             cursor = await self._execute(statement)
@@ -49,11 +48,8 @@ class SQLStore:
     def _build_entity(self, **kwargs):
         raise NotImplementedError('Subclasses must implement this method')
 
-    async def _execute(self, statement: Statement):
-        async with self.__engine.begin() as connection:
-            cursor = await connection.execute(statement)
-
-            return cursor.mappings()
+    async def _execute(self, statement: Statement) -> MappingResult:
+        return await self._database.execute(statement)
 
     def __format_input(self, result: SingleResult):
         data: dict[str, any] = dict(result)

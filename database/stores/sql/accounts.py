@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncEngine
-
 from database.stores.errors import AccountNotFound, NotFound
 from database.stores.sql.store import SQLStore
 from database.tables import Accounts
@@ -10,8 +8,8 @@ from domain.entities.account import AccountType
 
 
 class SQLAccountsStore(SQLStore):
-    def __init__(self, engine: AsyncEngine):
-        super().__init__(engine, Accounts)
+    def __init__(self, database: object):
+        super().__init__(database, Accounts)
 
     async def create(self, account: Account):
         return await self._create(

@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncEngine
-
 from .store import SQLStore
 from database.stores.errors import NotFound, WalletNotFound
 from database.tables.wallets import Wallets
@@ -10,8 +8,8 @@ from domain.entities.wallet import WalletType
 
 
 class SQLWalletsStore(SQLStore):
-    def __init__(self, engine: AsyncEngine):
-        super().__init__(engine, Wallets)
+    def __init__(self, database: object):
+        super().__init__(database, Wallets)
 
     async def create(self, wallet: Wallet):
         return await self._create(

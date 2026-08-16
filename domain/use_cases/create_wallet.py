@@ -11,17 +11,20 @@ class CreateWallet:
         self._wallet_type = type
 
     async def execute(self):
-        account = await self._create_account()
-        wallet = Wallet(
-            name=self._name,
-            type=self._wallet_type,
-            account_id=account.id
-        )
+        async with self._database.transacting() as database:
+            self._database = database
 
-        try:
-            return await self._database.wallets.create(wallet)
-        except Exception as error:
-            raise CouldNotCreateWallet(cause=error) from error
+            account = await self._create_account()
+            wallet = Wallet(
+                name=self._name,
+                type=self._wallet_type,
+                account_id=account.id
+            )
+
+            try:
+                return await self._database.wallets.create(wallet)
+            except Exception as error:
+                raise CouldNotCreateWallet(cause=error) from error
 
     async def _create_account(self):
         try:

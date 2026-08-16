@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncEngine
-
 from database.stores.errors import EntryNotFound, NotFound
 from database.stores.sql.store import SQLStore
 from database.tables import Entries
@@ -9,8 +7,8 @@ from domain.entities import Entry
 
 
 class SQLEntriesStore(SQLStore):
-    def __init__(self, engine: AsyncEngine):
-        super().__init__(engine, Entries)
+    def __init__(self, database: object):
+        super().__init__(database, Entries)
 
     async def create(self, entry: Entry):
         return await self._create(

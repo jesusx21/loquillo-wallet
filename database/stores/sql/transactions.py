@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncEngine
-
 from database.stores.errors import NotFound, TransactionNotFound
 from database.stores.sql.store import SQLStore
 from database.tables import Transactions
@@ -10,8 +8,8 @@ from domain.entities.transaction import TransactionStatus
 
 
 class SQLTransactionsStore(SQLStore):
-    def __init__(self, engine: AsyncEngine):
-        super().__init__(engine, Transactions)
+    def __init__(self, database: object):
+        super().__init__(database, Transactions)
 
     async def create(self, transaction: Transaction):
         # TODO: Add database transaction to create entries along with the transaction
