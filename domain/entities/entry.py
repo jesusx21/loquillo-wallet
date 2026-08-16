@@ -1,14 +1,13 @@
 from datetime import datetime
 from uuid import UUID
 
-from domain.entities.account import Account
 from domain.entities.entity import Entity
 
 
 class Entry(Entity):
     def __init__(
         self,
-        account: Account,
+        account_id: UUID,
         concept: str,
         amount: int,
         id: UUID | None = None,
@@ -18,7 +17,7 @@ class Entry(Entity):
     ):
         super().__init__(id, created_at, updated_at)
 
-        self.account = account
+        self.account_id = account_id
         self.transaction_id = transaction_id
         self.concept = concept
         self.amount = amount

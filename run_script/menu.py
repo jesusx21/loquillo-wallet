@@ -98,13 +98,13 @@ class Menu:
         transaction = Transaction(description, TransactionStatus.PENDING)
         transaction.add_entries(
             Entry(
-                account=source_wallet.account,
+                account_id=source_wallet.account.id,
                 transaction_id=transaction.id,
                 concept=f'Transfer to {target_wallet.name}',
                 amount=-int(amount)
             ),
             Entry(
-                account=target_wallet.account,
+                account_id=target_wallet.account.id,
                 transaction_id=transaction.id,
                 concept=f'Transfer from {source_wallet.name}',
                 amount=int(amount)
