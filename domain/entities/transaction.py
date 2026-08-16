@@ -1,16 +1,24 @@
+from enum import Enum
 from datetime import datetime
 from uuid import UUID
 
-from domain.entities.errors import SourceEntryAlreadySet
-
 from .entity import Entity
 from .entry import Entry
+from domain.entities.errors import SourceEntryAlreadySet
+
+
+class TransactionStatus(Enum):
+    PENDING = 'pending'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+    CANCELLED = 'cancelled'
 
 
 class Transaction(Entity):
     def __init__(
         self,
         description: str,
+        status: TransactionStatus,
         id: UUID | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None
@@ -18,6 +26,7 @@ class Transaction(Entity):
         super().__init__(id, created_at, updated_at)
 
         self.description = description
+        self.status = status
         self._source_entry: Entry | None = None
         self._target_entries: list[Entry] | None = []
 

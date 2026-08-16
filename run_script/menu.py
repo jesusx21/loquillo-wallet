@@ -2,6 +2,7 @@ import sys
 
 from database import Database
 from domain.entities import Entry, Transaction, Wallet
+from domain.entities.transaction import TransactionStatus
 from domain.entities.wallet import WalletType
 
 from .prompt import Prompt, SelectChoice
@@ -94,7 +95,7 @@ class Menu:
         description = f'Transfer from {source_wallet.name} to {target_wallet.name}'
         amount = Prompt.money('Enter the transaction amount') * 100
 
-        transaction = Transaction(description)
+        transaction = Transaction(description, TransactionStatus.PENDING)
         transaction.add_entries(
             Entry(
                 account=source_wallet.account,

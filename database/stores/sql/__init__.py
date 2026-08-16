@@ -1,10 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from database.stores.sql.accounts import AccountsStore
+from database.stores.sql.accounts import SQLAccountsStore
+from database.stores.sql.transactions import SQLTransactionsStore
 
 
 class SQLDatabase:
     def __init__(self, engine: AsyncEngine):
         self.__engine = engine
 
-        self.accounts = AccountsStore(self.__engine)
+        self.accounts = SQLAccountsStore(self.__engine)
+        self.transactions = SQLTransactionsStore(self.__engine)

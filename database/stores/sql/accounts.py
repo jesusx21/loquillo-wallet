@@ -9,7 +9,7 @@ from domain.entities import Account, DetailAccount
 from domain.entities.account import AccountType
 
 
-class AccountsStore(SQLStore):
+class SQLAccountsStore(SQLStore):
     def __init__(self, engine: AsyncEngine):
         super().__init__(engine, Accounts)
 

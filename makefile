@@ -1,6 +1,5 @@
 PYTHON ?= python
 ALEMBIC ?= $(PYTHON) -m alembic -c alembic.ini
-MESSAGE ?= migration
 REVISION ?= -1
 
 install: install-dev
@@ -31,13 +30,17 @@ lint-fixes:
 	@echo "Use: $(PYTHON) -m flake8 ."
 
 clean:
-	@rm -rf .build .ruff_cache
+	@rm -rf .build
 
 migration-create:
-	$(ALEMBIC) revision --autogenerate -m "$(MESSAGE)"
+	@mkdir -p .build/pycache
+	@read -p "Enter migration message: " msg; \
+	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(ALEMBIC) revision --autogenerate -m "$$msg"
 
 migration-run:
-	$(ALEMBIC) upgrade head
+	@mkdir -p .build/pycache
+	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(ALEMBIC) upgrade head
 
 rollback-run:
-	$(ALEMBIC) downgrade $(REVISION)
+	@mkdir -p .build/pycache
+	PYTHONPYCACHEPREFIX=$$(pwd)/.build/pycache $(ALEMBIC) downgrade $(REVISION)

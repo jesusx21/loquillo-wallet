@@ -1,14 +1,15 @@
-from unittest.mock import patch
 from uuid import UUID, uuid4
 
-from database.stores.errors import AccountNotFound, DatabaseError, InvalidId
-from domain.entities.account import Account, AccountType
-from domain.entities.detail_account import DetailAccount
+from unittest.mock import patch
 
 from . import SQLTestCase
 from .fixtures import load_fixtures
 from .fixtures.accounts import account_fixtures
 from .fixtures import constants
+
+from database.stores.errors import AccountNotFound, DatabaseError, InvalidId
+from domain.entities.account import Account, AccountType
+from domain.entities.detail_account import DetailAccount
 
 
 class TestAccountsStore(SQLTestCase):
