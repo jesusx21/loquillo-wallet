@@ -4,8 +4,6 @@ from uuid import UUID, uuid4
 
 from tests.database.sql import SQLTestCase
 from tests.database.sql.fixtures import constants, load_fixtures
-from tests.database.sql.fixtures.accounts import account_fixtures
-from tests.database.sql.fixtures.wallets import wallet_fixtures
 
 from database.stores.errors import DatabaseError, InvalidId, WalletNotFound
 from domain.entities.wallet import Wallet, WalletType
@@ -16,7 +14,7 @@ class TestWalletsStore(SQLTestCase):
         await super().async_set_up()
 
         self.database = self.get_database()
-        await load_fixtures(self.engine, [account_fixtures])
+        await load_fixtures(self.engine, 'accounts', 'users')
 
 
 class TestCreateWallet(TestWalletsStore):
@@ -26,7 +24,8 @@ class TestCreateWallet(TestWalletsStore):
         self.wallet_to_create = Wallet(
             name='Test Wallet',
             type=WalletType.DEBIT_CARD,
-            account_id=constants.ALBO_ACCOUNT_ID
+            account_id=constants.ALBO_ACCOUNT_ID,
+            user_id=constants.SECOND_USER_ID
         )
 
     async def test_create_wallet(self):
@@ -37,6 +36,7 @@ class TestCreateWallet(TestWalletsStore):
         self.assert_that(wallet.name).is_equal_to('Test Wallet')
         self.assert_that(wallet.account_id).is_equal_to(constants.ALBO_ACCOUNT_ID)
         self.assert_that(wallet.type).is_equal_to(WalletType.DEBIT_CARD)
+        self.assert_that(wallet.user_id).is_equal_to(constants.SECOND_USER_ID)
 
     async def test_error_on_creating_account(self):
         with patch.object(self.database.wallets, '_execute') as mock:
@@ -50,7 +50,7 @@ class TestFindWalletById(TestWalletsStore):
     async def async_set_up(self):
         await super().async_set_up()
 
-        await load_fixtures(self.engine, [wallet_fixtures])
+        await load_fixtures(self.engine, 'wallets')
 
     async def test_find_by_id(self):
         wallet = await self.database.wallets.find_by_id(constants.ALBO_WALLET_ID)
@@ -59,6 +59,7 @@ class TestFindWalletById(TestWalletsStore):
         self.assert_that(wallet.account_id).is_equal_to(constants.ALBO_ACCOUNT_ID)
         self.assert_that(wallet.name).is_equal_to('Albo')
         self.assert_that(wallet.type).is_equal_to(WalletType.DEBIT_CARD)
+        self.assert_that(wallet.user_id).is_equal_to(constants.USER_ID)
 
     async def test_raise_error_when_wallet_does_not_exist(self):
         with self.assertRaises(WalletNotFound):

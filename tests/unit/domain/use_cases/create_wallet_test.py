@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from tests import TestCase
 from unittest.mock import patch
 
@@ -13,7 +15,8 @@ class TestCreateWallet(TestCase):
 
         self.database = self.get_database()
 
-        self.create_wallet = CreateWallet(self.database, 'Efectivo', WalletType.CASH)
+        self.user_id = uuid4()
+        self.create_wallet = CreateWallet(self.database, self.user_id, 'Efectivo', WalletType.CASH)
 
     async def test_create_wallet(self):
         wallet = await self.create_wallet.execute()
@@ -22,6 +25,7 @@ class TestCreateWallet(TestCase):
         self.assert_that(wallet.created_at).is_not_none()
         self.assert_that(wallet.updated_at).is_not_none()
         self.assert_that(wallet.name).is_equal_to('Efectivo')
+        self.assert_that(wallet.user_id).is_equal_to(self.user_id)
 
     async def test_create_account_when_creating_a_wallet(self):
         wallet = await self.create_wallet.execute()

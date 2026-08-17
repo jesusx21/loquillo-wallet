@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from database import Database
 from domain.entities import DetailAccount
 from domain.entities.wallet import Wallet, WalletType
@@ -5,8 +7,9 @@ from domain.errors import CouldNotCreateAccount, CouldNotCreateWallet
 
 
 class CreateWallet:
-    def __init__(self, database: Database, name: str, type: WalletType):
+    def __init__(self, database: Database, user_id: UUID, name: str, type: WalletType):
         self._database = database
+        self._user_id = user_id
         self._name = name
         self._wallet_type = type
 
@@ -18,7 +21,8 @@ class CreateWallet:
             wallet = Wallet(
                 name=self._name,
                 type=self._wallet_type,
-                account_id=account.id
+                account_id=account.id,
+                user_id=self._user_id
             )
 
             try:

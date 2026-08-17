@@ -4,11 +4,15 @@ on:
   pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - master
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.13']
 
@@ -16,20 +20,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: requirements/dev.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          if [ -f requirements/dev.txt ]; then python -m pip install -r requirements/dev.txt; fi
+          python -m pip install -r requirements/dev.txt
 
       - name: Run tests
         env:
+          PYTHONPATH: ${{ github.workspace }}
           PYTHONPYCACHEPREFIX: ${{ github.workspace }}/.build/pycache
         run: |
-          mkdir -p .build/pycache
-          python -m nose2
+          mkdir -p "$PYTHONPYCACHEPREFIX"
+          python -m nose2 -v

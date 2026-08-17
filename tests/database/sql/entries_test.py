@@ -2,11 +2,7 @@ from unittest.mock import patch
 from uuid import UUID, uuid4
 
 from . import SQLTestCase
-from .fixtures import constants
-from .fixtures import load_fixtures
-from .fixtures.accounts import account_fixtures
-from .fixtures.entries import entry_fixtures
-from .fixtures.transactions import transaction_fixtures
+from .fixtures import constants, load_fixtures
 
 from database.stores.errors import DatabaseError, EntryNotFound, InvalidId
 from domain.entities.entry import Entry
@@ -18,7 +14,7 @@ class TestEntriesStore(SQLTestCase):
 
         self.database = self.get_database()
 
-        await load_fixtures(self.engine, [account_fixtures, transaction_fixtures])
+        await load_fixtures(self.engine, 'accounts', 'transactions')
 
     async def async_tear_down(self):
         await super().async_tear_down()
@@ -69,7 +65,7 @@ class TestFindEntryById(TestEntriesStore):
     async def async_set_up(self):
         await super().async_set_up()
 
-        await load_fixtures(self.engine, [entry_fixtures])
+        await load_fixtures(self.engine, 'entries')
 
     async def test_find_by_id(self):
         entry = await self.database.entries.find_by_id(constants.SOURCE_ENTRY_ID)

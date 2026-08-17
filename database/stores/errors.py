@@ -50,6 +50,11 @@ class WalletNotFound(NotFound):
         super().__init__(message=f'Wallet not found: {id}', id=id)
 
 
+class UserNotFound(NotFound):
+    def __init__(self, id: UUID):
+        super().__init__(message=f'User not found: {id}', id=id)
+
+
 class TransactionNotBalanced(DatabaseError):
     def __init__(self):
         super().__init__(message='Transaction not balanced')

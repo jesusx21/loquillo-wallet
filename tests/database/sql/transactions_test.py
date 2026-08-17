@@ -3,9 +3,7 @@ from uuid import UUID, uuid4
 from unittest.mock import patch
 
 from . import SQLTestCase
-from .fixtures import load_fixtures
-from .fixtures import constants
-from .fixtures.transactions import transaction_fixtures
+from .fixtures import constants, load_fixtures
 
 from database.stores.errors import DatabaseError, InvalidId, TransactionNotFound
 from domain.entities.transaction import Transaction, TransactionStatus
@@ -53,7 +51,7 @@ class TestFindTransactionById(TestTransactionsStore):
     async def async_set_up(self):
         await super().async_set_up()
 
-        await load_fixtures(self.engine, [transaction_fixtures])
+        await load_fixtures(self.engine, 'transactions')
 
     async def test_find_by_id(self):
         transaction = await self.database.transactions.find_by_id(constants.TRANSACTION_ID)

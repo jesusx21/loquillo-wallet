@@ -3,9 +3,7 @@ from uuid import UUID, uuid4
 from unittest.mock import patch
 
 from . import SQLTestCase
-from .fixtures import load_fixtures
-from .fixtures.accounts import account_fixtures
-from .fixtures import constants
+from .fixtures import constants, load_fixtures
 
 from database.stores.errors import AccountNotFound, DatabaseError, InvalidId
 from domain.entities.account import Account, AccountType
@@ -70,7 +68,7 @@ class TestFindAccountById(TestAccountsStore):
     async def async_set_up(self):
         await super().async_set_up()
 
-        await load_fixtures(self.engine, [account_fixtures])
+        await load_fixtures(self.engine, 'accounts')
 
     async def test_find_by_id(self):
         account = await self.database.accounts.find_by_id(constants.ALBO_ACCOUNT_ID)

@@ -1,7 +1,6 @@
-from database.tables import Entries
-
 from . import constants
 
+from database.tables import Entries
 
 entry_fixtures = {
     'table': Entries,

@@ -1,9 +1,8 @@
 from uuid import uuid4
 
-from database.tables import Transactions
-
 from . import constants
 
+from database.tables import Transactions
 
 transaction_fixtures = {
     'table': Transactions,

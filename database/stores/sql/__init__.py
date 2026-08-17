@@ -7,6 +7,7 @@ from .errors import TransactionNotOpened
 from database.stores.sql.accounts import SQLAccountsStore
 from database.stores.sql.entries import SQLEntriesStore
 from database.stores.sql.transactions import SQLTransactionsStore
+from database.stores.sql.users import SQLUsersStore
 from database.stores.sql.wallets import SQLWalletsStore
 
 
@@ -26,6 +27,7 @@ class SQLDatabase:
         self.accounts = SQLAccountsStore(self)
         self.entries = SQLEntriesStore(self)
         self.transactions = SQLTransactionsStore(self)
+        self.users = SQLUsersStore(self)
         self.wallets = SQLWalletsStore(self)
 
 

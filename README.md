@@ -4,43 +4,44 @@ Minimal personal-finance starter project in Python.
 
 ## Overview
 
-This repository is a small wallet-style starter app. It includes the domain model, an example runner, fixtures, and in-memory persistence to demonstrate how the project is structured.
+This repository is a small wallet-style starter app built around domain entities, SQLAlchemy table definitions, and in-memory or SQL-backed persistence layers.
 
 ## Project layout
 
-- `domain/` — business-logic layer: entities, services, and use cases.
-- `database/` — persistence adapters and table definitions.
-- `run_script/` — runnable example that seeds data and creates a sample transaction.
-- `tests/` — unit/integration-style tests.
-- `requirements/` — dependency files for runtime and development installs.
+- `domain/` — business rules and entity definitions.
+- `database/` — SQLAlchemy metadata, table definitions, and store implementations.
+- `run_script/` — example runner that creates and seeds wallet data.
+- `tests/` — project tests, including SQL-backed fixtures and account/transaction checks.
+- `requirements/` — dependency files for development and production.
+- `migrations/` — Alembic migration scripts and configuration.
 
 ## Python version
 
-The project targets Python 3.10+ and is expected to run with the version defined in `.python-version` via `pyenv`.
+The project targets Python 3.10+ and expects the version defined in `.python-version` via `pyenv`.
 
 ## Install dependencies
 
-For development work, install the dev requirements explicitly:
+For development work:
 
 ```bash
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r requirements/dev.txt
 ```
 
-Use the production file only when you specifically want the runtime-only environment:
+For runtime only:
 
 ```bash
 python -m pip install -r requirements/production.txt
 ```
 
-Or use the provided Make targets:
+Or use the project shortcuts:
 
 ```bash
 make install-dev
 make install-prod
 ```
 
-If you are using `pyenv`, you can do this:
+With `pyenv`:
 
 ```bash
 pyenv install 3.13.5
@@ -48,9 +49,21 @@ pyenv local 3.13.5
 make install-dev
 ```
 
-## Run the example
+## Available make tasks
 
-The runner is executed as a module so imports resolve correctly:
+- `make install` — installs the project dependencies for development.
+- `make install-prod` — installs the runtime dependencies only.
+- `make install-dev` — installs the development dependencies from `requirements/dev.txt`.
+- `make run` — starts the app entrypoint.
+- `make test` — runs the project test suite with `nose2`.
+- `make lint` — runs `flake8` to check style and errors.
+- `make lint-fixes` — shows the linting command to review manually.
+- `make clean` — removes generated build/cache artifacts.
+- `make migration-create` — generates an Alembic migration from the current schema.
+- `make migration-run` — applies pending migrations to the database.
+- `make rollback-run REVISION=-1` — rolls back the last migration.
+
+## Run the app
 
 ```bash
 make run
@@ -62,31 +75,11 @@ Or directly:
 PYTHONPYCACHEPREFIX=$(pwd)/.build/pycache python -m run_script
 ```
 
-`PYTHONPYCACHEPREFIX` keeps Python bytecode under `.build/pycache` instead of scattering it across the repo.
+`PYTHONPYCACHEPREFIX` keeps Python bytecode under `.build/pycache` to avoid scattering cache files across the repo.
 
-## Quality checks
+## Tests and lint
 
-The project uses Flake8 for linting and keeps the workflow manual instead of auto-fixing code on commit:
-
-```bash
-make lint
-```
-
-This runs:
-
-```bash
-python -m flake8 .
-```
-
-If you want to review the rule set only, you can use:
-
-```bash
-make lint-fixes
-```
-
-## Tests
-
-The project includes nose2-based tests.
+Run the unit suite:
 
 ```bash
 make test
@@ -98,6 +91,40 @@ Or directly:
 python -m nose2
 ```
 
+Run the linter:
+
+```bash
+make lint
+```
+
+Or directly:
+
+```bash
+python -m flake8 .
+```
+
+## Database migrations
+
+Generate an autogenerate migration:
+
+```bash
+make migration-make
+```
+
+Apply migrations:
+
+```bash
+make migration-run
+```
+
+Rollback a revision:
+
+```bash
+make rollback-run REVISION=-1
+```
+
+The migration targets are kept compatible with both the older name (`migration-make`) and the newer explicit name (`migration-create`).
+
 ## Cleanup
 
 ```bash
@@ -108,4 +135,4 @@ This removes generated cache/build artifacts such as `.build` and `.ruff_cache`.
 
 ## Contributing
 
-Keep business rules inside `domain/` and add tests under `tests/` when changing behavior.
+Keep business rules in `domain/`, persist data in `database/`, and add tests under `tests/` whenever behavior changes.

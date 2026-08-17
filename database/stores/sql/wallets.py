@@ -15,7 +15,8 @@ class SQLWalletsStore(SQLStore):
         return await self._create(
             name=wallet.name,
             type=wallet.type.value,
-            account_id=wallet.account_id
+            account_id=wallet.account_id,
+            user_id=wallet.user_id
         )
 
     async def find_by_id(self, wallet_id: UUID) -> Wallet:
@@ -30,5 +31,7 @@ class SQLWalletsStore(SQLStore):
             name=kwargs['name'],
             type=WalletType(kwargs['type']),
             account_id=kwargs['account_id'],
-            created_at=kwargs['created_at']
+            user_id=kwargs['user_id'],
+            created_at=kwargs['created_at'],
+            updated_at=kwargs['updated_at']
         )

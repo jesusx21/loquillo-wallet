@@ -16,6 +16,7 @@ class Wallet(Entity):
         name: str,
         type: WalletType,
         account_id: UUID,
+        user_id: UUID,
         id=None,
         created_at=None,
         updated_at=None
@@ -25,3 +26,4 @@ class Wallet(Entity):
         self.name = name
         self.type = type
         self.account_id = account_id
+        self.user_id = user_id
