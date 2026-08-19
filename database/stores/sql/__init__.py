@@ -23,6 +23,9 @@ class SQLDatabase:
 
             return cursor.mappings()
 
+    def is_transacting(self):
+        return False
+
     def __initialize_stores(self):
         self.accounts = SQLAccountsStore(self)
         self.entries = SQLEntriesStore(self)
@@ -30,23 +33,15 @@ class SQLDatabase:
         self.users = SQLUsersStore(self)
         self.wallets = SQLWalletsStore(self)
 
-
-class SQLTransactionDatabase(SQLDatabase):
     @asynccontextmanager
     async def transacting(self):
-        async with self._engine.connect() as connection:
-            self._connection = await connection.execution_options(isolation_level='REPEATABLE READ')
+        database = SQLTransactionDatabase(self._engine)
 
-            async with self._connection.begin() as transaction:
-                self._transaction = transaction
+        async with database.transacting():
+            yield database
 
-                try:
-                    yield self
 
-                    await self.commit()
-                except Exception as error:
-                    await self.rollback(error)
-
+class SQLTransactionDatabase(SQLDatabase):
     async def execute(self, statement):
         if not self._has_open_connection():
             raise TransactionNotOpened()
@@ -54,6 +49,19 @@ class SQLTransactionDatabase(SQLDatabase):
         cursor = await self._connection.execute(statement)
 
         return cursor.mappings()
+
+    @asynccontextmanager
+    async def transacting(self):
+        async with self._engine.connect() as connection:
+            self._connection = connection
+
+            async with connection.begin() as transaction:
+                self._transaction = transaction
+
+                yield self
+
+    def is_transacting(self):
+        return hasattr(self, '_transaction') and self._transaction is not None
 
     async def commit(self):
         if not self._has_open_connection():

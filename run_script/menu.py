@@ -4,6 +4,7 @@ from database import Database
 from domain.entities import Entry, Transaction, Wallet
 from domain.entities.transaction import TransactionStatus
 from domain.entities.wallet import WalletType
+from domain.use_cases import CreateUser, CreateWallet
 
 from .prompt import Prompt, SelectChoice
 
@@ -22,6 +23,7 @@ class Menu:
         self._database = database
 
         self.items = {
+            'create_user': MenuItem('Create a User', self._create_user),
             'create_wallet': MenuItem('Create a Wallet', self._create_wallet),
             'transfer_funds': MenuItem('Transfer Funds', self._transfer_funds),
             'exit': MenuItem('Exit', self._exit)
@@ -39,6 +41,17 @@ class Menu:
 
         return await self.display()
 
+    async def _create_user(self):
+        user_name = Prompt.string('Enter the first and middle name')
+        last_names = Prompt.string('Enter the last names')
+        # TODO: Validate email format
+        email = Prompt.string('Enter the email address')
+
+        create_user = CreateUser(self._database, user_name, last_names, email)
+
+        await create_user.execute()
+        Prompt.echo(f'User \'{user_name}\' created successfully!')
+
     async def _create_wallet(self):
         wallet_name = Prompt.string('Enter the wallet name')
         wallet_type = Prompt.select(
@@ -50,10 +63,16 @@ class Menu:
             ]
         )
 
-        wallet = Wallet(wallet_name, type=WalletType(wallet_type))
+        user_email = Prompt.string('Enter your email address to associate with the wallet')
+
+        try:
+            user = await self._database.users.find_by_email(user_email)
+        except Exception:
+            Prompt.echo(f'No user found with email: {user_email}')
+            return
 
         Prompt.echo(
-            f'The Wallet of type \'{wallet.type.value}\' is being created: \'{wallet.name}\'...'
+            f'The Wallet of type \'{wallet_type.value}\' is being created: \'{wallet_name}\'...'
         )
         should_continue = Prompt.confirm('Do you want to continue?')
 
@@ -61,7 +80,9 @@ class Menu:
             Prompt.echo('Wallet creation aborted.')
             return
 
-        created_wallet = await self._database.wallets.create(wallet)
+        create_wallet = CreateWallet(self._database, user.id, wallet_name, wallet_type)
+
+        created_wallet = await create_wallet.execute()
 
         Prompt.echo(f'Wallet \'{created_wallet.name}\' created with ID: {created_wallet.id}')
 

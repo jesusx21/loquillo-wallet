@@ -10,16 +10,35 @@ Entity = TypeVar('Entity')
 
 class MemoryStore(Generic[Entity]):
     def __init__(self):
-        self._items: dict[str, Entity] = {}
+        self.__items: dict[str, Entity] = {}
 
     async def create(self, entity: Entity) -> Entity:
         entity.id = uuid4()
         entity.created_at = datetime.now(timezone.utc)
         entity.updated_at = datetime.now(timezone.utc)
 
-        self._items[str(entity.id)] = deepcopy(entity)
+        self.__items[str(entity.id)] = deepcopy(entity)
 
-        return self._items[str(entity.id)]
+        return self.__items[str(entity.id)]
+
+    async def find_by_id(self, item_id: UUID) -> Entity:
+        if not isinstance(item_id, UUID):
+            raise InvalidId(item_id)
+
+        try:
+            return deepcopy(self.__items[str(item_id)])
+        except KeyError as error:
+            raise NotFound() from error
+
+    async def find_list(self, callback=None) -> list[Entity]:
+        data = deepcopy(list(self.__items.values()))
+
+        if not callback:
+            return data
+
+        result = filter(callback, data)
+
+        return list(result)
 
     async def update(self, entity: Entity) -> Entity:
         if not entity.id:
@@ -30,31 +49,29 @@ class MemoryStore(Generic[Entity]):
 
         entity_id = str(entity.id)
 
-        entity = deepcopy(self._items[entity_id])
-
-        if not entity:
+        if entity_id not in self.__items:
             raise NotFound()
 
-        entity.updated_at = datetime.now()
-        self._items[entity_id] = deepcopy(entity)
+        entity_to_update = deepcopy(self.__items[entity_id])
+        entity_to_update.updated_at = datetime.now()
+        self.__items[entity_id] = deepcopy(entity_to_update)
 
-        return entity
+        return entity_to_update
 
-    async def find_by_id(self, item_id: UUID) -> Entity:
-        if not isinstance(item_id, UUID):
-            raise InvalidId(item_id)
+    async def _find_one(self, callback) -> Entity:
+        entities_filtered = filter(
+            callback,
+            self.__get_entities()
+        )
+        entities_filtered = list(entities_filtered)
 
-        try:
-            return deepcopy(self._items[str(item_id)])
-        except KeyError as error:
-            raise NotFound() from error
+        if (len(entities_filtered) == 0):
+            raise NotFound()
 
-    async def find_list(self, callback=None) -> list[Entity]:
-        data = deepcopy(list(self._items.values()))
+        return entities_filtered[0]
 
-        if not callback:
-            return data
+    def __get_entities(self):
+        entities = self.__items.values()
+        entities = list(entities)
 
-        result = filter(callback, data)
-
-        return list(result)
+        return deepcopy(entities)

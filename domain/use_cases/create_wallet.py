@@ -1,22 +1,22 @@
 from uuid import UUID
 
 from database import Database
+from domain.use_cases.base_use_case import BaseUseCase
 from domain.entities import DetailAccount
 from domain.entities.wallet import Wallet, WalletType
 from domain.errors import CouldNotCreateAccount, CouldNotCreateWallet
 
 
-class CreateWallet:
+class CreateWallet(BaseUseCase):
     def __init__(self, database: Database, user_id: UUID, name: str, type: WalletType):
-        self._database = database
+        super().__init__(database)
+
         self._user_id = user_id
         self._name = name
         self._wallet_type = type
 
     async def execute(self):
-        async with self._database.transacting() as database:
-            self._database = database
-
+        async with self._execute_within_transaction():
             account = await self._create_account()
             wallet = Wallet(
                 name=self._name,

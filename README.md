@@ -19,6 +19,28 @@ This repository is a small wallet-style starter app built around domain entities
 
 The project targets Python 3.10+ and expects the version defined in `.python-version` via `pyenv`.
 
+## Environment check
+
+Use the project environment before running commands:
+
+```bash
+pyenv activate loquillo
+```
+
+## Quick commands
+
+Run the app:
+
+```bash
+make run
+```
+
+Run the test suite:
+
+```bash
+make test
+```
+
 ## Install dependencies
 
 For development work:

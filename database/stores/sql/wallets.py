@@ -25,6 +25,12 @@ class SQLWalletsStore(SQLStore):
         except NotFound as error:
             raise WalletNotFound(wallet_id) from error
 
+    async def find_by_user_id(self, user_id: UUID) -> Wallet:
+        try:
+            return await self._find_one(user_id=user_id)
+        except NotFound as error:
+            raise WalletNotFound(user_id) from error
+
     def _build_entity(self, **kwargs) -> Wallet:
         return Wallet(
             id=kwargs['id'],

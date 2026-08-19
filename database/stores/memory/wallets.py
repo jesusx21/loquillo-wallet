@@ -17,3 +17,9 @@ class MemoryWalletsStore(MemoryStore[Wallet]):
             return await super().find_by_id(id)
         except NotFound as error:
             raise WalletNotFound(id) from error
+
+    async def find_by_user_id(self, user_id: UUID) -> Wallet:
+        try:
+            return await self._find_one(lambda wallet: wallet.user_id == user_id)
+        except NotFound as error:
+            raise WalletNotFound(user_id) from error

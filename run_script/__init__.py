@@ -1,15 +1,17 @@
 import asyncio
 
+from app.config import Config
 from database import get_database
 
-from .fixtures import load_database
+# from .fixtures import load_database
 from .menu import Menu
 
 
 async def main():
-    database = get_database()
+    config = Config('config.ini')
+    database = get_database(config)
 
-    await load_database(database)
+    # await load_database(database)
 
     menu = Menu(database)
     await menu.display()

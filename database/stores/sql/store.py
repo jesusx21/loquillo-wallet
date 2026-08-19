@@ -45,6 +45,20 @@ class SQLStore:
         except Exception as error:
             raise DatabaseError(cause=error)
 
+    async def _find_one(self, **filters):
+        statement = self.__table \
+            .select() \
+            .where(*[self.__table.c[key] == value for key, value in filters.items()])
+
+        try:
+            cursor = await self._execute(statement)
+
+            return self.__format_input(cursor.one())
+        except DoesNotExist as error:
+            raise NotFound(filters) from error
+        except Exception as error:
+            raise DatabaseError(cause=error)
+
     def _build_entity(self, **kwargs):
         raise NotImplementedError('Subclasses must implement this method')
 

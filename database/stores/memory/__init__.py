@@ -15,9 +15,18 @@ class InMemoryDatabase:
         self.users = MemoryUsersStore()
         self.wallets = MemoryWalletsStore()
 
+        self._is_transacting = False
+
+    def is_transacting(self):
+        return self._is_transacting
+
     @asynccontextmanager
     async def transacting(self):
-        yield self
+        self._is_transacting = True
+        try:
+            yield self
+        finally:
+            self._is_transacting = False
 
     async def commit(self): pass
 

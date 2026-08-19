@@ -4,7 +4,12 @@ from configparser import ConfigParser
 
 class Config(ConfigParser):
     def __init__(self, config_file: str = 'config.ini'):
-        super().__init__(os.environ)
+        normalized_env = {}
+
+        for key, value in os.environ.items():
+            normalized_env[key.lower()] = value
+
+        super().__init__(normalized_env)
 
         self._config_file_path = config_file
 
