@@ -31,7 +31,7 @@ class TestCreateUser(TestCase):
 
     async def test_creates_cash_wallet_for_user(self):
         user = await self.create_user.execute()
-        wallet = await self.database.wallets.find_by_user_id(user.id)
+        [wallet] = await self.database.wallets.find_by_user_id(user.id)
 
         self.assert_that(wallet).is_not_none()
         self.assert_that(wallet.user_id).is_equal_to(user.id)

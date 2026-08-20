@@ -14,7 +14,7 @@ class TestWalletsStore(SQLTestCase):
         await super().async_set_up()
 
         self.database = self.get_database()
-        await load_fixtures(self.engine, 'accounts', 'users')
+        await load_fixtures(self.engine, 'accounts', 'users', 'wallets')
 
 
 class TestCreateWallet(TestWalletsStore):
@@ -47,11 +47,6 @@ class TestCreateWallet(TestWalletsStore):
 
 
 class TestFindWalletById(TestWalletsStore):
-    async def async_set_up(self):
-        await super().async_set_up()
-
-        await load_fixtures(self.engine, 'wallets')
-
     async def test_find_by_id(self):
         wallet = await self.database.wallets.find_by_id(constants.ALBO_WALLET_ID)
 
@@ -75,3 +70,26 @@ class TestFindWalletById(TestWalletsStore):
 
             with self.assertRaises(DatabaseError):
                 await self.database.wallets.find_by_id(constants.BBVA_WALLET_ID)
+
+
+class TestFindWalletsByType(TestWalletsStore):
+    async def test_find_wallets_for_user_and_multiple_types(self):
+        wallets = await self.database.wallets.find(
+            user_id=constants.USER_ID,
+            type=[WalletType.DEBIT_CARD, WalletType.CREDIT_CARD]
+        )
+
+        self.assert_that(wallets).is_length(2)
+        self.assert_that({wallet.type for wallet in wallets}).is_equal_to({
+            WalletType.CREDIT_CARD,
+            WalletType.DEBIT_CARD,
+        })
+
+    async def test_find_wallets_for_user_and_single_type(self):
+        wallets = await self.database.wallets.find(
+            user_id=constants.USER_ID,
+            type=WalletType.CREDIT_CARD
+        )
+
+        self.assert_that(wallets).is_length(1)
+        self.assert_that(wallets[0].name).is_equal_to('Stori')

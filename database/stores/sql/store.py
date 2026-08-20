@@ -1,4 +1,5 @@
 from uuid import UUID
+from enum import Enum
 
 from sqlalchemy import Executable as Statement, MappingResult, Table
 from sqlalchemy.engine import Row
@@ -46,14 +47,32 @@ class SQLStore:
             raise DatabaseError(cause=error)
 
     async def _find_one(self, **filters):
+        where_clauses = self.__format_where_clause(**filters)
+
         statement = self.__table \
             .select() \
-            .where(*[self.__table.c[key] == value for key, value in filters.items()])
+            .where(*where_clauses)
 
         try:
             cursor = await self._execute(statement)
 
             return self.__format_input(cursor.one())
+        except DoesNotExist as error:
+            raise NotFound(filters) from error
+        except Exception as error:
+            raise DatabaseError(cause=error)
+
+    async def _find(self, **filters):
+        where_clauses = self.__format_where_clause(**filters)
+
+        statement = self.__table \
+            .select() \
+            .where(*where_clauses)
+
+        try:
+            cursor = await self._execute(statement)
+
+            return [self.__format_input(row) for row in cursor.fetchall()]
         except DoesNotExist as error:
             raise NotFound(filters) from error
         except Exception as error:
@@ -69,3 +88,26 @@ class SQLStore:
         data: dict[str, any] = dict(result)
 
         return self._build_entity(**data)
+
+    def __format_where_clause(self, **filters):
+        where_clauses = []
+
+        for key, value in filters.items():
+            formatted_value = self.__format_where_clause_value(value)
+            column = self.__table.c[key]
+
+            if isinstance(value, list):
+                where_clauses.append(column.in_(formatted_value))
+                continue
+
+            where_clauses.append(column == formatted_value)
+
+        return where_clauses
+
+    def __format_where_clause_value(self, value):
+        if isinstance(value, list):
+            return [self.__format_where_clause_value(v) for v in value]
+        elif isinstance(value, Enum):
+            return value.value
+        else:
+            return value

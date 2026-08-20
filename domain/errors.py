@@ -18,3 +18,8 @@ class CouldNotCreateWallet(DomainError):
 class CouldNotCreateUser(DomainError):
     def __init__(self, cause: Exception):
         super().__init__(message='Could not create a user', cause=cause)
+
+
+class CouldNotGetWallets(DomainError):
+    def __init__(self, cause: Exception):
+        super().__init__(message='Could not get wallets', cause=cause)

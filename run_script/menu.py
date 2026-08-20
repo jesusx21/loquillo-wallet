@@ -1,12 +1,9 @@
 import sys
 
 from database import Database
-from domain.entities import Entry, Transaction, Wallet
-from domain.entities.transaction import TransactionStatus
-from domain.entities.wallet import WalletType
-from domain.use_cases import CreateUser, CreateWallet
-
+from run_script.resources.wallets import Wallets
 from .prompt import Prompt, SelectChoice
+from .resources.users import Users
 
 
 class MenuItem:
@@ -21,117 +18,47 @@ class MenuItem:
 class Menu:
     def __init__(self, database: Database):
         self._database = database
+        self.users_resource = Users(database)
+        self.wallets_resource = Wallets(database)
 
-        self.items = {
-            'create_user': MenuItem('Create a User', self._create_user),
-            'create_wallet': MenuItem('Create a Wallet', self._create_wallet),
-            'transfer_funds': MenuItem('Transfer Funds', self._transfer_funds),
+        self._main_menu_items = {
+            'create_wallet': MenuItem('Create a Wallet', self.wallets_resource.create),
+            'get_wallets': MenuItem('Get Wallets', self.wallets_resource.get_list),
+            'transfer_funds': MenuItem('Transfer Funds', self.wallets_resource.transfer_funds),
+            'sign_out': MenuItem('Sign Out', self.users_resource.sign_out),
+            'exit': MenuItem('Exit', self._exit)
+        }
+        self.users_items = {
+            'sign_up': MenuItem('Sign Up', self.users_resource.sign_up),
+            'sign_in': MenuItem('Sign In', self.users_resource.sign_in),
             'exit': MenuItem('Exit', self._exit)
         }
 
     async def display(self):
-        choices = [SelectChoice(key, item.name) for key, item in self.items.items()]
+        if self.users_resource.is_authenticated():
+            user = self.users_resource.get_current_user()
+            self.wallets_resource.set_user_id(user.id)
+            await self._display_menu(self._main_menu_items)
+        else:
+            await self._display_menu(self.users_items)
+
+        return await self.display()
+
+    async def _display_menu(self, items: dict[str, MenuItem]):
+        choices = [SelectChoice(key, item.name) for key, item in items.items()]
+
         selected_option = Prompt.select(
             message='Select an option',
             choices=choices
         )
 
-        if selected_option in self.items:
-            await self.items[selected_option].run()
-
-        return await self.display()
-
-    async def _create_user(self):
-        user_name = Prompt.string('Enter the first and middle name')
-        last_names = Prompt.string('Enter the last names')
-        # TODO: Validate email format
-        email = Prompt.string('Enter the email address')
-
-        create_user = CreateUser(self._database, user_name, last_names, email)
-
-        await create_user.execute()
-        Prompt.echo(f'User \'{user_name}\' created successfully!')
-
-    async def _create_wallet(self):
-        wallet_name = Prompt.string('Enter the wallet name')
-        wallet_type = Prompt.select(
-            message='Select the wallet type',
-            choices=[
-                SelectChoice(WalletType.CASH, 'Efectivo'),
-                SelectChoice(WalletType.CREDIT_CARD, 'Tarjeta de Crédito'),
-                SelectChoice(WalletType.DEBIT_CARD, 'Tarjeta de Débito')
-            ]
-        )
-
-        user_email = Prompt.string('Enter your email address to associate with the wallet')
-
-        try:
-            user = await self._database.users.find_by_email(user_email)
-        except Exception:
-            Prompt.echo(f'No user found with email: {user_email}')
-            return
-
-        Prompt.echo(
-            f'The Wallet of type \'{wallet_type.value}\' is being created: \'{wallet_name}\'...'
-        )
-        should_continue = Prompt.confirm('Do you want to continue?')
-
-        if not should_continue:
-            Prompt.echo('Wallet creation aborted.')
-            return
-
-        create_wallet = CreateWallet(self._database, user.id, wallet_name, wallet_type)
-
-        created_wallet = await create_wallet.execute()
-
-        Prompt.echo(f'Wallet \'{created_wallet.name}\' created with ID: {created_wallet.id}')
+        if selected_option in items:
+            await items[selected_option].run()
 
     async def _exit(self):
+        if self.users_resource.is_authenticated():
+            Prompt.echo('Signing out before exit...')
+            await self.users_resource.sign_out()
+
         Prompt.echo('Exiting...')
         sys.exit(0)
-
-    async def _transfer_funds(self):
-        wallets = await self._database.wallets.find_list()
-        wallets_by_id = {}
-        wallet_choices = []
-
-        for wallet in wallets:
-            wallets_by_id[wallet.id] = wallet
-            wallet_choices.append(SelectChoice(wallet.id, wallet.name))
-
-        source_wallet_id = Prompt.select(
-            message='Select the source wallet',
-            choices=wallet_choices
-        )
-        source_wallet = wallets_by_id[source_wallet_id]
-        Prompt.echo(f'Source wallet selected: {source_wallet.name}')
-
-        target_wallet_id = Prompt.select(
-            message='Select the target wallet',
-            choices=wallet_choices
-        )
-        target_wallet = wallets_by_id[target_wallet_id]
-        Prompt.echo(f'Target wallet selected: {target_wallet.name}')
-
-        description = f'Transfer from {source_wallet.name} to {target_wallet.name}'
-        amount = Prompt.money('Enter the transaction amount') * 100
-
-        transaction = Transaction(description, TransactionStatus.PENDING)
-        transaction.add_entries(
-            Entry(
-                account_id=source_wallet.account.id,
-                transaction_id=transaction.id,
-                concept=f'Transfer to {target_wallet.name}',
-                amount=-int(amount)
-            ),
-            Entry(
-                account_id=target_wallet.account.id,
-                transaction_id=transaction.id,
-                concept=f'Transfer from {source_wallet.name}',
-                amount=int(amount)
-            )
-        )
-
-        Prompt.echo(f'Transaction created: {transaction.description}')
-        for entry in transaction.entries:
-            Prompt.echo(f'{entry.concept}: ${entry.amount / 100.0:,.2f}')

@@ -1,0 +1,16 @@
+from uuid import uuid4
+
+BBVA_ACCOUNT_ID = uuid4()
+CASH_ACCOUNT_ID = uuid4()
+SANTANDER_ACCOUNT_ID = uuid4()
+HSBC_ACCOUNT_ID = uuid4()
+SCOTIABANK_ACCOUNT_ID = uuid4()
+
+BBVA_WALLET_ID = uuid4()
+CASH_WALLET_ID = uuid4()
+SANTANDER_WALLET_ID = uuid4()
+HSBC_WALLET_ID = uuid4()
+SCOTIABANK_WALLET_ID = uuid4()
+
+FIRST_USER_ID = uuid4()
+SECOND_USER_ID = uuid4()

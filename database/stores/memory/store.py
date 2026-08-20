@@ -13,7 +13,8 @@ class MemoryStore(Generic[Entity]):
         self.__items: dict[str, Entity] = {}
 
     async def create(self, entity: Entity) -> Entity:
-        entity.id = uuid4()
+        if not entity.id:
+            entity.id = uuid4()
         entity.created_at = datetime.now(timezone.utc)
         entity.updated_at = datetime.now(timezone.utc)
 
@@ -30,16 +31,6 @@ class MemoryStore(Generic[Entity]):
         except KeyError as error:
             raise NotFound() from error
 
-    async def find_list(self, callback=None) -> list[Entity]:
-        data = deepcopy(list(self.__items.values()))
-
-        if not callback:
-            return data
-
-        result = filter(callback, data)
-
-        return list(result)
-
     async def update(self, entity: Entity) -> Entity:
         if not entity.id:
             raise InvalidId(None)
@@ -53,22 +44,31 @@ class MemoryStore(Generic[Entity]):
             raise NotFound()
 
         entity_to_update = deepcopy(self.__items[entity_id])
-        entity_to_update.updated_at = datetime.now()
+        entity_to_update.updated_at = datetime.now(timezone.utc)
         self.__items[entity_id] = deepcopy(entity_to_update)
 
         return entity_to_update
 
-    async def _find_one(self, callback) -> Entity:
-        entities_filtered = filter(
-            callback,
-            self.__get_entities()
-        )
-        entities_filtered = list(entities_filtered)
+    async def _find_one(self, **kwargs) -> Entity:
+        entities = await self._find(**kwargs)
 
-        if (len(entities_filtered) == 0):
+        if not entities:
             raise NotFound()
 
-        return entities_filtered[0]
+        return entities[0]
+
+    async def _find(self, **kwargs) -> list[Entity]:
+        result = filter(
+            lambda entity: all(
+                getattr(entity, key) in value
+                if isinstance(value, list)
+                else getattr(entity, key) == value
+                for key, value in kwargs.items()
+            ),
+            self.__get_entities()
+        )
+
+        return list(result)
 
     def __get_entities(self):
         entities = self.__items.values()

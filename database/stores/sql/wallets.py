@@ -31,6 +31,9 @@ class SQLWalletsStore(SQLStore):
         except NotFound as error:
             raise WalletNotFound(user_id) from error
 
+    async def find(self, **filters) -> list[Wallet]:
+        return await self._find(**filters)
+
     def _build_entity(self, **kwargs) -> Wallet:
         return Wallet(
             id=kwargs['id'],

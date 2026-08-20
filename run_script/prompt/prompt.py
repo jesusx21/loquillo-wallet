@@ -3,6 +3,8 @@ import logging
 import click
 import inquirer
 
+from .custom_types import Email
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,8 +33,33 @@ class Prompt:
         return choice_selected.value
 
     @staticmethod
+    def checkbox(message: str, choices: list[SelectChoice]) -> list[str]:
+        answer = inquirer.prompt([
+            inquirer.Checkbox(
+                'values',
+                message=message,
+                choices=[choice.label for choice in choices],
+                carousel=True
+            )
+        ])
+
+        labels_selected = answer['values']
+
+        choices_selected = [
+            choice for choice in choices if choice.label in labels_selected
+        ]
+
+        return choices_selected
+
+    @staticmethod
     def string(message: str) -> str:
         value = click.prompt(message, type=str)
+
+        return value
+
+    @staticmethod
+    def email(message: str) -> str:
+        value = click.prompt(message, type=Email)
 
         return value
 
