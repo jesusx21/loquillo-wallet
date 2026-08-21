@@ -1,22 +1,18 @@
-from uuid import UUID
-
 from database import Database
-from domain.entities.transaction import TransactionStatus
+from domain.entities import User
 from domain.entities.wallet import WalletType
-from domain.use_cases.create_wallet import CreateWallet
-from domain.use_cases.get_wallets import GetWallets
+from domain.use_cases import CreateWallet, GetWallets, TransferFunds
 from run_script.prompt import Prompt, SelectChoice
-from domain.entities import Entry, Transaction
 
 
 class Wallets:
     def __init__(self, database: Database):
         self._database = database
-        self._user_id = None
+        self._user = None
         self._wallets = []
 
-    def set_user_id(self, user_id: UUID):
-        self._user_id = user_id
+    def set_user(self, user: User):
+        self._user = user
 
     async def create(self):
         wallet_name = Prompt.string('Enter the wallet name')
@@ -38,7 +34,7 @@ class Wallets:
             Prompt.echo('Wallet creation aborted.')
             return
 
-        create_wallet = CreateWallet(self._database, self._user_id, wallet_name, wallet_type)
+        create_wallet = CreateWallet(self._database, self._user.id, wallet_name, wallet_type)
 
         created_wallet = await create_wallet.execute()
 
@@ -56,7 +52,7 @@ class Wallets:
             ]
         )
 
-        get_wallets = GetWallets(self._database, self._user_id, wallet_types)
+        get_wallets = GetWallets(self._database, self._user.id, wallet_types)
 
         wallets = await get_wallets.execute()
 
@@ -92,24 +88,19 @@ class Wallets:
         target_wallet = wallets_by_id[target_wallet_id]
         Prompt.echo(f'Target wallet selected: {target_wallet.name}')
 
-        description = f'Transfer from {source_wallet.name} to {target_wallet.name}'
+        concept = 'Transfer funds'
         amount = Prompt.money('Enter the transaction amount') * 100
 
-        transaction = Transaction(description, TransactionStatus.PENDING)
-        transaction.add_entries(
-            Entry(
-                account_id=source_wallet.account_id,
-                transaction_id=transaction.id,
-                concept=f'Transfer to {target_wallet.name}',
-                amount=-int(amount)
-            ),
-            Entry(
-                account_id=target_wallet.account_id,
-                transaction_id=transaction.id,
-                concept=f'Transfer from {source_wallet.name}',
-                amount=int(amount)
-            )
+        transfer_funds = TransferFunds(
+            self._database,
+            self._user,
+            source_wallet_id,
+            target_wallet_id,
+            concept,
+            amount
         )
+
+        transaction = await transfer_funds.execute()
 
         Prompt.echo(f'Transaction created: {transaction.description}')
         for entry in transaction.entries:

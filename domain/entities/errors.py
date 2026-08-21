@@ -11,3 +11,10 @@ class SourceEntryAlreadySet(EntityError):
         super().__init__(
             message='Source entry is already set'
         )
+
+
+class TargetEntryAlreadySet(EntityError):
+    def __init__(self):
+        super().__init__(
+            message='Target entry is already set'
+        )

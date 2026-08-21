@@ -4,7 +4,7 @@ from uuid import UUID
 
 from .entity import Entity
 from .entry import Entry
-from domain.entities.errors import SourceEntryAlreadySet
+from domain.entities.errors import SourceEntryAlreadySet, TargetEntryAlreadySet
 
 
 class TransactionStatus(Enum):
@@ -28,30 +28,32 @@ class Transaction(Entity):
         self.description = description
         self.status = status
         self._source_entry: Entry | None = None
-        self._target_entries: list[Entry] | None = []
+        self._target_entry: Entry | None = None
 
     @property
     def source_entry(self):
         return self._source_entry
 
     @property
-    def target_entries(self):
-        return self._target_entries
+    def target_entry(self):
+        return self._target_entry
 
     @property
     def entries(self):
-        if self._source_entry:
-            return [self._source_entry] + self._target_entries
+        entries = []
 
-        return self._target_entries
+        if self._source_entry:
+            entries.append(self._source_entry)
+        if self._target_entry:
+            entries.append(self._target_entry)
+
+        return entries
 
     def is_balanced(self):
-        if not self._source_entry or not self._target_entries:
+        if not self._source_entry or not self._target_entry:
             return False
 
-        total_target_amount = sum(entry.amount for entry in self._target_entries)
-
-        return self._source_entry.amount + total_target_amount == 0
+        return self._source_entry.amount + self._target_entry.amount == 0
 
     def add_entries(self, *entries: tuple[Entry]):
         [self.add_entry(entry) for entry in entries]
@@ -63,10 +65,13 @@ class Transaction(Entity):
 
             self._source_entry = entry
         else:
-            self._target_entries.append(entry)
+            if self._target_entry is not None:
+                raise TargetEntryAlreadySet()
+
+            self._target_entry = entry
 
     def has_source_entry(self):
         return self._source_entry is not None
 
     def has_target_entry(self):
-        return len(self._target_entries) > 0
+        return self._target_entry is not None

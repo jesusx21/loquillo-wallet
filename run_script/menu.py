@@ -37,7 +37,7 @@ class Menu:
     async def display(self):
         if self.users_resource.is_authenticated():
             user = self.users_resource.get_current_user()
-            self.wallets_resource.set_user_id(user.id)
+            self.wallets_resource.set_user(user)
             await self._display_menu(self._main_menu_items)
         else:
             await self._display_menu(self.users_items)
