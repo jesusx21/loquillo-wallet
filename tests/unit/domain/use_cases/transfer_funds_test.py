@@ -81,7 +81,12 @@ class TestTransferFunds(TestCase):
             with self.assertRaises(CouldNotCreateTransaction):
                 await self.fund_transfers()
 
-    async def fund_transfers(self, user: User = None, source_wallet_id: UUID = None, target_wallet_id: UUID = None):
+    async def fund_transfers(
+        self,
+        user: User = None,
+        source_wallet_id: UUID = None,
+        target_wallet_id: UUID = None
+    ):
         transfer = TransferFunds(
             self.database,
             user or self.user,

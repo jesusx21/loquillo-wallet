@@ -3,12 +3,13 @@ from contextlib import asynccontextmanager
 from sqlalchemy import Executable as Statement
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from .accounts import SQLAccountsStore
+from .entries import SQLEntriesStore
 from .errors import TransactionNotOpened
-from database.stores.sql.accounts import SQLAccountsStore
-from database.stores.sql.entries import SQLEntriesStore
-from database.stores.sql.transactions import SQLTransactionsStore
-from database.stores.sql.users import SQLUsersStore
-from database.stores.sql.wallets import SQLWalletsStore
+from .loquillo_wallets import SQLLoquilloWalletsStore
+from .transactions import SQLTransactionsStore
+from .users import SQLUsersStore
+from .wallets import SQLWalletsStore
 
 
 class SQLDatabase:
@@ -29,6 +30,7 @@ class SQLDatabase:
     def __initialize_stores(self):
         self.accounts = SQLAccountsStore(self)
         self.entries = SQLEntriesStore(self)
+        self.loquillo_wallets = SQLLoquilloWalletsStore(self)
         self.transactions = SQLTransactionsStore(self)
         self.users = SQLUsersStore(self)
         self.wallets = SQLWalletsStore(self)

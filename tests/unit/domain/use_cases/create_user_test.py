@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from tests import TestCase
 
-from domain.entities import User
+from domain.entities import Account, LoquilloWallet, User
 from domain.errors import CouldNotCreateUser
 from domain.use_cases import CreateUser
 
@@ -37,6 +37,27 @@ class TestCreateUser(TestCase):
         self.assert_that(wallet.user_id).is_equal_to(user.id)
         self.assert_that(wallet.name).is_equal_to('Efectivo')
         self.assert_that(wallet.type).is_equal_to('cash')
+
+    async def test_creates_loquillo_wallet_and_accounts_for_user(self):
+        user = await self.create_user.execute()
+        loquillo_wallet = await self.database.loquillo_wallets.find_by_user_id(user.id)
+
+        self.assert_that(loquillo_wallet).is_instance_of(LoquilloWallet)
+        self.assert_that(loquillo_wallet.user_id).is_equal_to(user.id)
+        self.assert_that(loquillo_wallet.incomes_account_id).is_instance_of(UUID)
+        self.assert_that(loquillo_wallet.expenses_account_id).is_instance_of(UUID)
+
+        incomes_account = await self.database \
+            .accounts \
+            .find_by_id(loquillo_wallet.incomes_account_id)
+        expenses_account = await self.database \
+            .accounts \
+            .find_by_id(loquillo_wallet.expenses_account_id)
+
+        self.assert_that(incomes_account).is_instance_of(Account)
+        self.assert_that(expenses_account).is_instance_of(Account)
+        self.assert_that(incomes_account.name).is_equal_to('Ingresos')
+        self.assert_that(expenses_account.name).is_equal_to('Gastos')
 
     async def test_raises_could_not_create_user_error(self):
         with patch.object(self.database.users, 'create') as mock:
