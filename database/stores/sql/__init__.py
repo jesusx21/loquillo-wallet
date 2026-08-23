@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from .accounts import SQLAccountsStore
 from .entries import SQLEntriesStore
 from .errors import TransactionNotOpened
-from .loquillo_wallets import SQLLoquilloWalletsStore
 from .transactions import SQLTransactionsStore
 from .users import SQLUsersStore
 from .wallets import SQLWalletsStore
@@ -30,7 +29,6 @@ class SQLDatabase:
     def __initialize_stores(self):
         self.accounts = SQLAccountsStore(self)
         self.entries = SQLEntriesStore(self)
-        self.loquillo_wallets = SQLLoquilloWalletsStore(self)
         self.transactions = SQLTransactionsStore(self)
         self.users = SQLUsersStore(self)
         self.wallets = SQLWalletsStore(self)

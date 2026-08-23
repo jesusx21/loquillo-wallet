@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from .accounts import account_fixtures
 from .entries import entry_fixtures
-from .loquillo_wallets import loquillo_wallet_fixtures
 from .transactions import transaction_fixtures
 from .users import user_fixtures
 from .wallets import wallet_fixtures
@@ -10,7 +9,6 @@ from .wallets import wallet_fixtures
 fixtures_mapped = {
     'accounts': account_fixtures,
     'entries': entry_fixtures,
-    'loquillo_wallets': loquillo_wallet_fixtures,
     'transactions': transaction_fixtures,
     'users': user_fixtures,
     'wallets': wallet_fixtures
