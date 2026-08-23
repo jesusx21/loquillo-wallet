@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from .accounts import MemoryAccountsStore
+from .categories import MemoryCategoriesStore
 from .entries import MemoryEntriesStore
 from .transactions import MemoryTransactionsStore
 from .users import MemoryUsersStore
@@ -10,6 +11,7 @@ from .wallets import MemoryWalletsStore
 class InMemoryDatabase:
     def __init__(self):
         self.accounts = MemoryAccountsStore()
+        self.categories = MemoryCategoriesStore()
         self.entries = MemoryEntriesStore()
         self.transactions = MemoryTransactionsStore(self)
         self.users = MemoryUsersStore()

@@ -17,6 +17,11 @@ SOURCE_ENTRY_ID = uuid4()
 TARGET_ENTRY_ID = uuid4()
 TRANSACTION_ID = uuid4()
 
+SALARY_CATEGORY_ID = uuid4()
+RENT_CATEGORY_ID = uuid4()
+LOAN_CATEGORY_ID = uuid4()
+DEBT_CATEGORY_ID = uuid4()
+
 USER_ID = uuid4()
 SECOND_USER_ID = uuid4()
 THIRD_USER_ID = uuid4()

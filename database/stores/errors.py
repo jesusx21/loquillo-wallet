@@ -35,6 +35,11 @@ class AccountNotFound(NotFound):
         super().__init__(message=f'Account not found: {id}', id=id)
 
 
+class CategoryNotFound(NotFound):
+    def __init__(self, id: UUID):
+        super().__init__(message=f'Category not found: {id}', id=id)
+
+
 class EntryNotFound(NotFound):
     def __init__(self, id: UUID):
         super().__init__(message=f'Entry not found: {id}', id=id)

@@ -5,6 +5,7 @@ from unittest.mock import patch
 from tests import TestCase
 
 from domain.entities import User
+from domain.entities.category import CategoryType
 from domain.errors import CouldNotCreateUser
 from domain.use_cases import CreateUser
 
@@ -37,6 +38,23 @@ class TestCreateUser(TestCase):
         self.assert_that(wallet.user_id).is_equal_to(user.id)
         self.assert_that(wallet.name).is_equal_to('Efectivo')
         self.assert_that(wallet.type).is_equal_to('cash')
+
+    async def test_creates_default_categories_for_user(self):
+        user = await self.create_user.execute()
+        categories = await self.database.categories.find_by_user_id(user.id)
+
+        self.assert_that(categories).is_length(38)
+        self.assert_that({category.user_id for category in categories}).is_equal_to({user.id})
+        self.assert_that({category.type for category in categories}).is_equal_to({
+            CategoryType.INCOME,
+            CategoryType.EXPENSE,
+            CategoryType.LOAN,
+            CategoryType.DEBT,
+        })
+        self.assert_that(any(category.name == 'Salario' for category in categories)).is_true()
+        self.assert_that(any(category.name == 'Alquiler' for category in categories)).is_true()
+        self.assert_that(any(category.name == 'Préstamo' for category in categories)).is_true()
+        self.assert_that(any(category.name == 'Deuda' for category in categories)).is_true()
 
     async def test_raises_could_not_create_user_error(self):
         with patch.object(self.database.users, 'create') as mock:

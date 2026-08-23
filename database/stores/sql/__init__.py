@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from sqlalchemy import Executable as Statement
 from sqlalchemy.ext.asyncio import AsyncEngine
 
+from database.stores.sql.categories import SQLCategoriesStore
+
 from .accounts import SQLAccountsStore
 from .entries import SQLEntriesStore
 from .errors import TransactionNotOpened
@@ -28,6 +30,7 @@ class SQLDatabase:
 
     def __initialize_stores(self):
         self.accounts = SQLAccountsStore(self)
+        self.categories = SQLCategoriesStore(self)
         self.entries = SQLEntriesStore(self)
         self.transactions = SQLTransactionsStore(self)
         self.users = SQLUsersStore(self)
