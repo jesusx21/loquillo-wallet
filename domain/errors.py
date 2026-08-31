@@ -58,6 +58,11 @@ class CouldNotGetAccount(DomainError):
         )
 
 
+class InvalidOperation(DomainError):
+    def __init__(self, message: str = 'Invalid operation', **kwargs):
+        super().__init__(message=message,  **kwargs)
+
+
 class CouldNotCreateCategories(DomainError):
     def __init__(self, cause: Exception = None, **kwargs):
         super().__init__(

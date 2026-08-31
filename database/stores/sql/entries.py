@@ -3,6 +3,7 @@ from uuid import UUID
 from database.stores.errors import EntryNotFound, NotFound
 from database.stores.sql.store import SQLStore
 from database.tables import Entries
+from domain.core.entity_accounts import EntityAccounts
 from domain.entities import Entry
 
 
@@ -25,6 +26,8 @@ class SQLEntriesStore(SQLStore):
             raise EntryNotFound(entry_id) from error
 
     def _build_entity(self, **kwargs) -> Entry:
+        entity_accounts = EntityAccounts(self._database)
+
         return Entry(
             id=kwargs['id'],
             account_id=kwargs.get('account_id'),
@@ -32,5 +35,6 @@ class SQLEntriesStore(SQLStore):
             concept=kwargs['concept'],
             amount=kwargs['amount'],
             created_at=kwargs['created_at'],
-            updated_at=kwargs['updated_at']
+            updated_at=kwargs['updated_at'],
+            entity_accounts=entity_accounts
         )
