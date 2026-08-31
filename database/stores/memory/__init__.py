@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 
+from database.stores.memory.events import MemoryEventsStore
+
 from .accounts import MemoryAccountsStore
 from .categories import MemoryCategoriesStore
 from .entries import MemoryEntriesStore
@@ -13,6 +15,7 @@ class InMemoryDatabase:
         self.accounts = MemoryAccountsStore()
         self.categories = MemoryCategoriesStore()
         self.entries = MemoryEntriesStore()
+        self.events = MemoryEventsStore()
         self.transactions = MemoryTransactionsStore(self)
         self.users = MemoryUsersStore()
         self.wallets = MemoryWalletsStore()

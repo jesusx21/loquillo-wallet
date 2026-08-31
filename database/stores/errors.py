@@ -45,6 +45,11 @@ class EntryNotFound(NotFound):
         super().__init__(message=f'Entry not found: {id}', id=id)
 
 
+class EventNotFound(NotFound):
+    def __init__(self, id: UUID):
+        super().__init__(message=f'Event not found: {id}', id=id)
+
+
 class TransactionNotFound(NotFound):
     def __init__(self, id: UUID):
         super().__init__(message=f'Transaction not found: {id}', id=id)
