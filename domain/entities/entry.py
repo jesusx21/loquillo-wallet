@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from domain.entities.account import Account
-from domain.entities.entity import Entity
-from domain.entities.errors import EntityAccountsNotSet, EntityAccountsAlreadySet
+from .account import Account
+from .entity import Entity
+from .errors import EntityAccountsNotSet, EntityAccountsAlreadySet
 from domain.core.entity_accounts import EntityAccounts
 
 
@@ -45,5 +45,6 @@ class Entry(Entity):
             raise EntityAccountsNotSet()
 
         self.__account = await self.__entity_accounts.find_by_account_id(self.account_id)
+        self.account_id = self.__account.id
 
         return self.__account

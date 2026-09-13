@@ -52,9 +52,7 @@ class Wallets:
             ]
         )
 
-        get_wallets = GetWallets(self._database, self._user.id, wallet_types)
-
-        wallets = await get_wallets.execute()
+        wallets = await self.__get_wallets(wallet_types)
 
         if not wallets:
             Prompt.echo('No wallets found for the selected types.')
@@ -70,7 +68,13 @@ class Wallets:
         wallets_by_id = {}
         wallet_choices = []
 
-        for wallet in self._wallets:
+        wallets = await self.__get_wallets([
+            WalletType.CASH,
+            WalletType.CREDIT_CARD,
+            WalletType.DEBIT_CARD
+        ])
+
+        for wallet in wallets:
             wallets_by_id[wallet.id] = wallet
             wallet_choices.append(SelectChoice(wallet.id, wallet.name))
 
@@ -88,7 +92,6 @@ class Wallets:
         target_wallet = wallets_by_id[target_wallet_id]
         Prompt.echo(f'Target wallet selected: {target_wallet.name}')
 
-        concept = 'Transfer funds'
         amount = Prompt.money('Enter the transaction amount') * 100
 
         transfer_funds = TransferFunds(
@@ -96,7 +99,6 @@ class Wallets:
             self._user,
             source_wallet_id,
             target_wallet_id,
-            concept,
             amount
         )
 
@@ -105,3 +107,12 @@ class Wallets:
         Prompt.echo(f'Transaction created: {transaction.description}')
         for entry in transaction.entries:
             Prompt.echo(f'{entry.concept}: ${entry.amount / 100.0:,.2f}')
+
+    async def __get_wallets(self, types: list[WalletType]):
+        get_wallets = GetWallets(
+            self._database,
+            self._user.id,
+            types
+        )
+
+        return await get_wallets.execute()

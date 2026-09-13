@@ -28,7 +28,6 @@ class TestTransferFunds(TestCase):
         self.source_wallet_id = constants.CASH_WALLET_ID
         self.target_wallet_id = constants.BBVA_WALLET_ID
         self.amount = 50.0
-        self.concept = 'Groceries'
 
     async def test_transfer_funds_between_wallets_of_same_user(self):
         transaction = await self.fund_transfers()
@@ -37,7 +36,7 @@ class TestTransferFunds(TestCase):
         self.assert_that(transaction.description).is_equal_to(
             'Transfer funds from Cash Wallet to BBVA Wallet'
         )
-        self.assert_that(transaction.status).is_equal_to(TransactionStatus.PENDING)
+        self.assert_that(transaction.status).is_equal_to(TransactionStatus.COMPLETED)
         self.assert_that(transaction.is_balanced()).is_true()
         self.assert_that(transaction.source_entry.account_id).is_equal_to(
             constants.CASH_ACCOUNT_ID
@@ -92,7 +91,6 @@ class TestTransferFunds(TestCase):
             user or self.user,
             source_wallet_id or self.source_wallet_id,
             target_wallet_id or self.target_wallet_id,
-            self.concept,
             self.amount,
         )
 

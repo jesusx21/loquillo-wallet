@@ -1,6 +1,6 @@
 from __future__ import annotations
-from uuid import UUID
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from domain.core.errors import CouldNotLoadAccount
 
@@ -14,6 +14,6 @@ class EntityAccounts:
 
     async def find_by_account_id(self, account_id: UUID):
         try:
-            return await self.__database.entries.find_by_account_id(account_id)
+            return await self.__database.accounts.find_by_id(account_id)
         except Exception as error:
             raise CouldNotLoadAccount(account_id, cause=error) from error

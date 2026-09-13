@@ -18,6 +18,8 @@ class Users:
             Prompt.echo(f'No user found with email: {email}. Error: {error}')
             return
 
+        Prompt.echo(f'Welcome {self._user.names}!!')
+
     async def sign_up(self):
         user_name = Prompt.string('Enter the first and middle name')
         last_names = Prompt.string('Enter the last names')

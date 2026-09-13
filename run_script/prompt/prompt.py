@@ -17,31 +17,30 @@ class SelectChoice:
 class Prompt:
     @staticmethod
     def select(message: str, choices: list[SelectChoice]):
-        answer = inquirer.prompt([
+        answer = Prompt.__run_prompt(
             inquirer.List(
                 'value',
                 message=message,
                 choices=[choice.label for choice in choices],
                 carousel=True
             )
-        ])
+        )
 
         label_selected = answer['value']
-
         choice_selected = next(choice for choice in choices if choice.label == label_selected)
 
         return choice_selected.value
 
     @staticmethod
     def checkbox(message: str, choices: list[SelectChoice]) -> list[str]:
-        answer = inquirer.prompt([
+        answer = Prompt.__run_prompt(
             inquirer.Checkbox(
                 'values',
                 message=message,
                 choices=[choice.label for choice in choices],
                 carousel=True
             )
-        ])
+        )
 
         labels_selected = answer['values']
 
@@ -85,3 +84,12 @@ class Prompt:
     @staticmethod
     def confirm(message: str) -> bool:
         return click.confirm(message)
+
+    @staticmethod
+    def __run_prompt(question):
+        answer = inquirer.prompt([question], raise_keyboard_interrupt=True)
+
+        if answer is None:
+            raise KeyboardInterrupt()
+
+        return answer
