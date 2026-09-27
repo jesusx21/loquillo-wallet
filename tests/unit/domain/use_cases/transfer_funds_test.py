@@ -5,11 +5,11 @@ from unittest.mock import patch
 from tests import TestCase
 from tests.unit.domain.fixtures import load_fixtures, constants
 
+from domain.crud import CRUD
+from domain.crud.transactions.errors import CouldNotCreateTransaction
+from domain.crud.wallets.errors import WalletNotFound
 from domain.entities import Transaction, User
 from domain.entities.transaction import TransactionStatus
-from domain.crud import CRUD
-from domain.crud.wallets.errors import WalletNotFound
-from domain.errors import CouldNotCreateTransaction
 from domain.use_cases import TransferFunds
 
 
@@ -72,7 +72,6 @@ class TestTransferFunds(TestCase):
         target_wallet_id: UUID = None
     ):
         transfer = TransferFunds(
-            self.database,
             self.crud,
             user or self.user,
             source_wallet_id or self.source_wallet_id,

@@ -10,13 +10,6 @@ class CouldNotCreateUser(DomainError):
         super().__init__(message='Could not create a user', cause=cause)
 
 
-class CouldNotCreateTransaction(DomainError):
-    def __init__(self, cause: Exception = None):
-        super().__init__(
-            message='Could not create transaction', cause=cause
-        )
-
-
 class NotFound(DomainError):
     def __init__(self, message: str, cause=None, **kwargs):
         super().__init__(message=message, cause=cause, **kwargs)

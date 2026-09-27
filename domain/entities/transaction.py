@@ -17,16 +17,19 @@ class TransactionStatus(Enum):
 class Transaction(Entity):
     def __init__(
         self,
-        description: str,
         status: TransactionStatus,
         id: UUID | None = None,
+        date: datetime | None = None,
+        note: str | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None
     ):
         super().__init__(id, created_at, updated_at)
 
-        self.description = description
         self.status = status
+        self.note = note
+        self.date = date or datetime.now()
+
         self._source_entry: Entry | None = None
         self._target_entry: Entry | None = None
 

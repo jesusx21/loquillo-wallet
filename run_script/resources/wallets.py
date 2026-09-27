@@ -103,7 +103,6 @@ class Wallets:
         amount = Prompt.money('Enter the transaction amount') * 100
 
         transfer_funds = TransferFunds(
-            self._database,
             self._crud,
             self._user,
             source_wallet_id,

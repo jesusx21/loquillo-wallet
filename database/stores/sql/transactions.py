@@ -12,11 +12,10 @@ class SQLTransactionsStore(SQLStore):
         super().__init__(database, Transactions)
 
     async def create(self, transaction: Transaction):
-        # TODO: Add database transaction to create entries along with the transaction
-        # to ensure atomicity of the operation
         return await self._create(
-            description=transaction.description,
-            status=transaction.status.value
+            status=transaction.status.value,
+            date=transaction.date,
+            note=transaction.note
         )
 
     async def find_by_id(self, transaction_id: UUID) -> Transaction:
@@ -28,7 +27,8 @@ class SQLTransactionsStore(SQLStore):
     def _build_entity(self, **kwargs) -> Transaction:
         return Transaction(
             id=kwargs['id'],
-            description=kwargs['description'],
             status=TransactionStatus(kwargs['status']),
+            note=kwargs['note'],
+            date=kwargs['date'],
             created_at=kwargs['created_at']
         )

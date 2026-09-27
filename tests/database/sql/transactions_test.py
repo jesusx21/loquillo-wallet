@@ -21,24 +21,17 @@ class TestTransactionsStore(SQLTestCase):
 
 class TestCreateTransaction(TestTransactionsStore):
     async def test_create_transaction(self):
-        transaction_to_create = Transaction(
-            description='Test transaction',
-            status=TransactionStatus.PENDING
-        )
+        transaction_to_create = Transaction(status=TransactionStatus.PENDING)
 
         transaction = await self.database.transactions.create(transaction_to_create)
 
         self.assert_that(transaction).is_instance_of(Transaction)
         self.assert_that(transaction.id).is_instance_of(UUID)
-        self.assert_that(transaction.description).is_equal_to('Test transaction')
         self.assert_that(transaction.status).is_equal_to(TransactionStatus.PENDING)
         self.assert_that(transaction.created_at).is_not_none()
 
     async def test_error_on_creating_transaction(self):
-        transaction_to_create = Transaction(
-            description='Test transaction',
-            status=TransactionStatus.PENDING
-        )
+        transaction_to_create = Transaction(status=TransactionStatus.PENDING)
 
         with patch.object(self.database.transactions, '_execute') as mock:
             mock.side_effect = Exception('Database error')
@@ -58,7 +51,6 @@ class TestFindTransactionById(TestTransactionsStore):
 
         self.assert_that(transaction).is_instance_of(Transaction)
         self.assert_that(transaction.id).is_equal_to(constants.TRANSACTION_ID)
-        self.assert_that(transaction.description).is_equal_to('Initial transaction')
         self.assert_that(transaction.status).is_equal_to(TransactionStatus.COMPLETED)
 
     async def test_raise_error_when_transaction_does_not_exist(self):
