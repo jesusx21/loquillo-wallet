@@ -20,6 +20,18 @@ class TestCase(IsolatedAsyncioTestCase):
     async def async_tear_down(self):
         pass
 
+    def setUp(self):
+        self.set_up()
+
+    def tearDown(self):
+        self.tear_down()
+
+    def set_up(self):
+        pass
+
+    def tear_down(self):
+        pass
+
     def get_database(self) -> InMemoryDatabase:
         return InMemoryDatabase()
 

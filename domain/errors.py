@@ -39,20 +39,6 @@ class CouldNotCreateTransaction(DomainError):
         )
 
 
-class CouldNotGetAccount(DomainError):
-    def __init__(self, cause: Exception = None):
-        super().__init__(
-            message='Could not get accounts', cause=cause
-        )
-
-
 class InvalidOperation(DomainError):
     def __init__(self, message: str = 'Invalid operation', **kwargs):
         super().__init__(message=message,  **kwargs)
-
-
-class CouldNotCreateCategories(DomainError):
-    def __init__(self, cause: Exception = None, **kwargs):
-        super().__init__(
-            message='Could not create categories', cause=cause, **kwargs
-        )
