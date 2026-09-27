@@ -1,22 +1,26 @@
 from uuid import UUID
 
 from database import Database
-from database.stores.errors import WalletNotFound as WalletDoesNotExist
+from domain.crud import CRUD
+from domain.crud.wallets.errors import WalletNotFound
 from domain.entities import Entry, Transaction, User, Wallet
 from domain.entities.transaction import TransactionStatus
-from domain.errors import CouldNotCreateTransaction, WalletNotFound, CouldNotGetWallets
+from domain.errors import CouldNotCreateTransaction
 
 
 class TransferFunds:
     def __init__(
         self,
         database: Database,
+        crud: CRUD,
         user: User,
         source_wallet_id: UUID,
         target_wallet_id: UUID,
         amount: float
     ):
         self.__database = database
+        self.__crud = crud
+
         self.__user = user
         self.__source_wallet_id = source_wallet_id
         self.__target_wallet_id = target_wallet_id
@@ -31,12 +35,7 @@ class TransferFunds:
         return await self.__save_transaction(transaction)
 
     async def _get_wallet(self, wallet_id: UUID):
-        try:
-            wallet = await self.__database.wallets.find_by_id(wallet_id)
-        except WalletDoesNotExist as error:
-            raise WalletNotFound(wallet_id=wallet_id) from error
-        except Exception as error:
-            raise CouldNotGetWallets(cause=error) from error
+        wallet = await self.__crud.wallets.get_by_id(wallet_id)
 
         if wallet.user_id != self.__user.id:
             raise WalletNotFound(wallet_id=wallet_id)

@@ -2,8 +2,7 @@ from uuid import UUID
 
 from database import Database
 from domain.crud import CRUD
-from domain.entities.wallet import Wallet, WalletType
-from domain.errors import CouldNotCreateWallet
+from domain.entities.wallet import WalletType
 
 
 class CreateWallet:
@@ -19,15 +18,8 @@ class CreateWallet:
         async with self.__database.transacting() as database:
             self.__crud.with_database(database)
 
-            account = await self.__crud.accounts.create(f'Cuenta de {self.__name}')
-            wallet = Wallet(
-                name=self.__name,
-                type=self.__wallet_type,
-                account_id=account.id,
-                user_id=self.__user_id
+            return self.__crud.wallets.create(
+                self.__user_id,
+                self.__name,
+                self.__wallet_type
             )
-
-            try:
-                return await self.__database.wallets.create(wallet)
-            except Exception as error:
-                raise CouldNotCreateWallet(cause=error) from error

@@ -2,7 +2,7 @@ from database import Database
 from domain.crud import CRUD
 from domain.entities import User
 from domain.entities.wallet import WalletType
-from domain.use_cases import CreateWallet, GetWallets, TransferFunds
+from domain.use_cases import CreateWallet, TransferFunds
 from run_script.prompt import Prompt, SelectChoice
 
 
@@ -104,6 +104,7 @@ class Wallets:
 
         transfer_funds = TransferFunds(
             self._database,
+            self._crud,
             self._user,
             source_wallet_id,
             target_wallet_id,
@@ -112,15 +113,9 @@ class Wallets:
 
         transaction = await transfer_funds.execute()
 
-        Prompt.echo(f'Transaction created: {transaction.description}')
+        Prompt.echo('Transaction created')
         for entry in transaction.entries:
             Prompt.echo(f'{entry.concept}: ${entry.amount / 100.0:,.2f}')
 
     async def __get_wallets(self, types: list[WalletType]):
-        get_wallets = GetWallets(
-            self._database,
-            self._user.id,
-            types
-        )
-
-        return await get_wallets.execute()
+        return await self._crud.wallets.get_by_types(self._user.id, types)

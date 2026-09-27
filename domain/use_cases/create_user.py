@@ -3,7 +3,6 @@ from domain.crud import CRUD
 from domain.entities import User
 from domain.entities.wallet import WalletType
 from domain.errors import CouldNotCreateUser
-from domain.use_cases.create_wallet import CreateWallet
 
 
 class CreateUser:
@@ -43,15 +42,11 @@ class CreateUser:
             raise CouldNotCreateUser(cause=error) from error
 
     async def __create_cash_wallet(self, user):
-        create_wallet = CreateWallet(
-            database=self.__database,
-            crud=self.__crud,
+        return await self.__crud.wallets.create(
             user_id=user.id,
             name='Efectivo',
             type=WalletType.CASH
         )
-
-        return await create_wallet.execute()
 
     async def __create_income_categories(self, user: User):
         categories_names = [

@@ -1,4 +1,6 @@
-from .data import data, constants
+from tests.unit.domain.fixtures.data import data
+
+from .data import constants
 
 from database import Database
 from domain.core.entity_accounts import EntityAccounts

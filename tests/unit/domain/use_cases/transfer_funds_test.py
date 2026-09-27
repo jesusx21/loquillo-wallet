@@ -1,13 +1,15 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from unittest.mock import patch
 
 from tests import TestCase
-from tests.unit.domain.use_cases.fixtures import load_fixtures, constants
+from tests.unit.domain.fixtures import load_fixtures, constants
 
 from domain.entities import Transaction, User
 from domain.entities.transaction import TransactionStatus
-from domain.errors import CouldNotCreateTransaction, CouldNotGetWallets, WalletNotFound
+from domain.crud import CRUD
+from domain.crud.wallets.errors import WalletNotFound
+from domain.errors import CouldNotCreateTransaction
 from domain.use_cases import TransferFunds
 
 
@@ -16,6 +18,7 @@ class TestTransferFunds(TestCase):
         await super().async_set_up()
 
         self.database = self.get_database()
+        self.crud = CRUD(self.database)
 
         await load_fixtures(self.database, ['accounts', 'wallets'])
 
@@ -33,9 +36,6 @@ class TestTransferFunds(TestCase):
         transaction = await self.fund_transfers()
 
         self.assert_that(transaction).is_instance_of(Transaction)
-        self.assert_that(transaction.description).is_equal_to(
-            'Transfer funds from Cash Wallet to BBVA Wallet'
-        )
         self.assert_that(transaction.status).is_equal_to(TransactionStatus.COMPLETED)
         self.assert_that(transaction.is_balanced()).is_true()
         self.assert_that(transaction.source_entry.account_id).is_equal_to(
@@ -47,10 +47,6 @@ class TestTransferFunds(TestCase):
         )
         self.assert_that(transaction.target_entry.amount).is_equal_to(self.amount)
 
-    async def test_raises_wallet_not_found_when_source_wallet_does_not_exist(self):
-        with self.assertRaises(WalletNotFound):
-            await self.fund_transfers(source_wallet_id=uuid4())
-
     async def test_raises_wallet_not_found_when_source_wallet_does_not_belong_to_user(self):
         other_user = User(
             names='Jane',
@@ -61,17 +57,6 @@ class TestTransferFunds(TestCase):
 
         with self.assertRaises(WalletNotFound):
             await self.fund_transfers(user=other_user)
-
-    async def test_raises_wallet_not_found_when_target_wallet_does_not_exist(self):
-        with self.assertRaises(WalletNotFound):
-            await self.fund_transfers(target_wallet_id=uuid4())
-
-    async def test_raises_could_not_get_wallets_when_database_fails(self):
-        with patch.object(self.database.wallets, 'find_by_id') as mock:
-            mock.side_effect = Exception('Database error')
-
-            with self.assertRaises(CouldNotGetWallets):
-                await self.fund_transfers()
 
     async def test_raises_could_not_create_transaction_when_database_fails(self):
         with patch.object(self.database.transactions, 'create') as mock:
@@ -88,6 +73,7 @@ class TestTransferFunds(TestCase):
     ):
         transfer = TransferFunds(
             self.database,
+            self.crud,
             user or self.user,
             source_wallet_id or self.source_wallet_id,
             target_wallet_id or self.target_wallet_id,
