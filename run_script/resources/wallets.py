@@ -1,4 +1,5 @@
 from database import Database
+from domain.crud import CRUD
 from domain.entities import User
 from domain.entities.wallet import WalletType
 from domain.use_cases import CreateWallet, GetWallets, TransferFunds
@@ -6,8 +7,9 @@ from run_script.prompt import Prompt, SelectChoice
 
 
 class Wallets:
-    def __init__(self, database: Database):
+    def __init__(self, database: Database, crud: CRUD):
         self._database = database
+        self._crud = crud
         self._user = None
         self._wallets = []
 
@@ -34,7 +36,13 @@ class Wallets:
             Prompt.echo('Wallet creation aborted.')
             return
 
-        create_wallet = CreateWallet(self._database, self._user.id, wallet_name, wallet_type)
+        create_wallet = CreateWallet(
+            self._database,
+            self._crud,
+            self._user.id,
+            wallet_name,
+            wallet_type
+        )
 
         created_wallet = await create_wallet.execute()
 

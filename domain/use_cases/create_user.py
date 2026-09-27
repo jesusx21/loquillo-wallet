@@ -1,23 +1,26 @@
 from database.stores import Database
-from domain.entities import Account, User
-from domain.entities.account import AccountType
+from domain.crud import CRUD
+from domain.entities import User
 from domain.entities.category import Category, CategoryType
 from domain.entities.wallet import WalletType
-from domain.errors import CouldNotCreateAccount, CouldNotCreateCategories, CouldNotCreateUser
-from domain.use_cases.base_use_case import BaseUseCase
+from domain.errors import CouldNotCreateCategories, CouldNotCreateUser
 from domain.use_cases.create_wallet import CreateWallet
 
 
-class CreateUser(BaseUseCase):
-    def __init__(self, database: Database, names: str, last_names: str, email: str):
-        super().__init__(database)
+class CreateUser:
+    def __init__(self, database: Database, crud: CRUD, names: str, last_names: str, email: str):
+        self.__database = database
+        self.__crud = crud
 
         self.__names = names
         self.__last_names = last_names
         self.__email = email
 
     async def execute(self):
-        async with self._execute_within_transaction():
+        async with self.__database.transacting() as database:
+            self.__database = database
+            self.__crud.with_database(database)
+
             user = await self.__create_user()
             await self.__create_cash_wallet(user)
 
@@ -36,30 +39,20 @@ class CreateUser(BaseUseCase):
         )
 
         try:
-            return await self._database.users.create(user)
+            return await self.__database.users.create(user)
         except Exception as error:
             raise CouldNotCreateUser(cause=error) from error
 
     async def __create_cash_wallet(self, user):
         create_wallet = CreateWallet(
-            database=self._database,
+            database=self.__database,
+            crud=self.__crud,
             user_id=user.id,
             name='Efectivo',
             type=WalletType.CASH
         )
 
         return await create_wallet.execute()
-
-    async def __create_account(self, name: str):
-        account = Account(
-            name=name,
-            type=AccountType.DETAIL
-        )
-
-        try:
-            return await self._database.accounts.create(account)
-        except Exception as error:
-            raise CouldNotCreateAccount(cause=error) from error
 
     def __build_category(self, user: User, name: str, type: CategoryType):
         category = Category(
@@ -85,10 +78,10 @@ class CreateUser(BaseUseCase):
     async def __create_categories(self, categories: list[Category]):
         for category in categories:
             try:
-                account = await self.__create_account(name=f'Cuenta de {category.name}')
+                account = await self.__crud.accounts.create(f'Cuenta de {category.name}')
                 category.account_id = account.id
 
-                await self._database.categories.create(category)
+                await self.__database.categories.create(category)
             except Exception as error:
                 raise CouldNotCreateCategories(cause=error, category_name=category.name) from error
 

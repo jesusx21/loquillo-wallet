@@ -3,9 +3,11 @@ from uuid import uuid4
 from tests import TestCase
 from unittest.mock import patch
 
+from domain.crud import CRUD
+from domain.crud.accounts.errors import CouldNotCreateAccount
 from domain.entities import Account
 from domain.entities.wallet import WalletType
-from domain.errors import CouldNotCreateAccount, CouldNotCreateWallet
+from domain.errors import CouldNotCreateWallet
 from domain.use_cases import CreateWallet
 
 
@@ -16,7 +18,13 @@ class TestCreateWallet(TestCase):
         self.database = self.get_database()
 
         self.user_id = uuid4()
-        self.create_wallet = CreateWallet(self.database, self.user_id, 'Efectivo', WalletType.CASH)
+        self.create_wallet = CreateWallet(
+            self.database,
+            CRUD(self.database),
+            self.user_id,
+            'Efectivo',
+            WalletType.CASH
+        )
 
     async def test_create_wallet(self):
         wallet = await self.create_wallet.execute()
@@ -33,7 +41,7 @@ class TestCreateWallet(TestCase):
 
         self.assert_that(account).is_instance_of(Account)
         self.assert_that(account.id).is_not_none()
-        self.assert_that(account.name).is_equal_to('Efectivo Account')
+        self.assert_that(account.name).is_equal_to('Cuenta de Efectivo')
 
     async def test_error_unexpected_when_creating_account(self):
         with patch.object(self.database.accounts, 'create') as mock:

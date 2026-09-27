@@ -1,9 +1,10 @@
 import sys
 
-from database import Database
-from run_script.resources.wallets import Wallets
 from .prompt import Prompt, SelectChoice
 from .resources.users import Users
+from database import Database
+from domain.crud import CRUD
+from run_script.resources.wallets import Wallets
 
 
 class MenuItem:
@@ -16,10 +17,9 @@ class MenuItem:
 
 
 class Menu:
-    def __init__(self, database: Database):
-        self._database = database
-        self.users_resource = Users(database)
-        self.wallets_resource = Wallets(database)
+    def __init__(self, database: Database, crud: CRUD):
+        self.users_resource = Users(database, crud)
+        self.wallets_resource = Wallets(database, crud)
 
         self._main_menu_items = {
             'create_wallet': MenuItem('Create a Wallet', self.wallets_resource.create),

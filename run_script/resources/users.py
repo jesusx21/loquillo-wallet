@@ -1,11 +1,13 @@
 from database import Database
-from run_script.prompt import Prompt
+from domain.crud import CRUD
 from domain.use_cases import CreateUser
+from run_script.prompt import Prompt
 
 
 class Users:
-    def __init__(self, database: Database):
+    def __init__(self, database: Database, crud: CRUD):
         self._database = database
+        self._crud = crud
         self._user = None
 
     async def sign_in(self):
@@ -25,7 +27,7 @@ class Users:
         last_names = Prompt.string('Enter the last names')
         email = Prompt.email('Enter the email address')
 
-        create_user = CreateUser(self._database, user_name, last_names, email)
+        create_user = CreateUser(self._database, self._crud, user_name, last_names, email)
 
         self._user = await create_user.execute()
         Prompt.echo(f'User \'{user_name}\' created successfully!')

@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 from sqlalchemy import Executable as Statement
-from database.stores.sql.events import SQLEventsStore
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from database.stores.sql.categories import SQLCategoriesStore
@@ -33,7 +32,6 @@ class SQLDatabase:
         self.accounts = SQLAccountsStore(self)
         self.categories = SQLCategoriesStore(self)
         self.entries = SQLEntriesStore(self)
-        self.events = SQLEventsStore(self)
         self.transactions = SQLTransactionsStore(self)
         self.users = SQLUsersStore(self)
         self.wallets = SQLWalletsStore(self)

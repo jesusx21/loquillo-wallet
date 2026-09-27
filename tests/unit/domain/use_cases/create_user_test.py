@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from tests import TestCase
 
+from domain.crud import CRUD
 from domain.entities import User
 from domain.entities.category import CategoryType
 from domain.errors import CouldNotCreateUser
@@ -16,6 +17,7 @@ class TestCreateUser(TestCase):
 
         self.create_user = CreateUser(
             self.database,
+            CRUD(self.database),
             'Jon',
             'Doe',
             'jon.doe@example.com'

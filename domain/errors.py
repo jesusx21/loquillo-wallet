@@ -5,11 +5,6 @@ class DomainError(Exception):
         self.info = kwargs
 
 
-class CouldNotCreateAccount(DomainError):
-    def __init__(self, cause: Exception):
-        super().__init__(message='Could not create an account', cause=cause)
-
-
 class CouldNotCreateWallet(DomainError):
     def __init__(self, cause: Exception):
         super().__init__(message='Could not create a wallet', cause=cause)
@@ -28,13 +23,6 @@ class CouldNotGetWallets(DomainError):
 class NotFound(DomainError):
     def __init__(self, message: str, cause=None, **kwargs):
         super().__init__(message=message, cause=cause, **kwargs)
-
-
-class AccountNotFound(DomainError):
-    def __init__(self, account_id: str, cause: Exception = None):
-        super().__init__(
-            message=f'Account with ID {account_id} not found', account_id=account_id, cause=cause
-        )
 
 
 class WalletNotFound(DomainError):

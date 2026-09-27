@@ -27,13 +27,6 @@ class TargetEntryAlreadySet(EntityError):
         )
 
 
-class PostingRuleNotDefineForEvent(NotImplementedError):
-    def __init__(self, event_type: str):
-        super().__init__(
-            message=f'Posting rule not defined for event type: {event_type}'
-        )
-
-
 class EntityAccountsAlreadySet(EntityError):
     def __init__(self):
         super().__init__(

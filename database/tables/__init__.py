@@ -1,7 +1,6 @@
 from .accounts import Accounts
 from .categories import Categories
 from .entries import Entries
-from .events import Events
 from .metadata import metadata
 from .transactions import Transactions
 from .users import Users
@@ -12,7 +11,6 @@ __all__ = [
     'Accounts',
     'Categories',
     'Entries',
-    'Events',
     'Transactions',
     'Users',
     'Wallets',
