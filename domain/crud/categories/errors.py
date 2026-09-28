@@ -12,6 +12,14 @@ class CouldNotGetCategory(DomainError):
         )
 
 
+class CouldNotGetCategories(DomainError):
+    def __init__(self, cause: Exception):
+        super().__init__(
+            'Could not get categories',
+            cause=cause
+        )
+
+
 class CategoryNotFound(NotFound):
     def __init__(self, category_id: str):
         super().__init__(

@@ -22,9 +22,8 @@ class Menu:
         self.wallets_resource = Wallets(database, crud)
 
         self._main_menu_items = {
-            'create_wallet': MenuItem('Create a Wallet', self.wallets_resource.create),
-            'get_wallets': MenuItem('Get Wallets', self.wallets_resource.get_list),
-            'transfer_funds': MenuItem('Transfer Funds', self.wallets_resource.transfer_funds),
+            'transactions': MenuItem('Transactions', self._display_transactions_menu),
+            'wallets': MenuItem('Wallets', self._display_wallets_menu),
             'sign_out': MenuItem('Sign Out', self.users_resource.sign_out),
             'exit': MenuItem('Exit', self._exit)
         }
@@ -54,6 +53,38 @@ class Menu:
 
         if selected_option in items:
             await items[selected_option].run()
+
+    async def _display_transactions_menu(self):
+        transaction_items = {
+            'add_income_transaction': MenuItem(
+                'Add Income Transaction',
+                self.wallets_resource.add_income_transaction
+            ),
+            'add_expense_transaction': MenuItem(
+                'Add Expense Transaction',
+                self.wallets_resource.add_expense_transaction
+            ),
+            'transfer_funds': MenuItem('Transfer Funds', self.wallets_resource.transfer_funds),
+            'go_back': MenuItem('Go Back', self._go_back),
+            'sign_out': MenuItem('Sign Out', self.users_resource.sign_out),
+            'exit': MenuItem('Exit', self._exit)
+        }
+
+        await self._display_menu(transaction_items)
+
+    async def _display_wallets_menu(self):
+        wallets_items = {
+            'create_wallet': MenuItem('Create a Wallet', self.wallets_resource.create),
+            'get_wallets': MenuItem('Get Wallets', self.wallets_resource.get_list),
+            'go_back': MenuItem('Go Back', self._go_back),
+            'sign_out': MenuItem('Sign Out', self.users_resource.sign_out),
+            'exit': MenuItem('Exit', self._exit)
+        }
+
+        await self._display_menu(wallets_items)
+
+    async def _go_back(self):
+        await self._display_menu(self._main_menu_items)
 
     async def _exit(self):
         if self.users_resource.is_authenticated():

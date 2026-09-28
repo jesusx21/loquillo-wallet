@@ -40,13 +40,13 @@ class TestCreateTransactions(TestTransactionsCRUD):
         self.assert_that(transaction.source_entry.concept) \
             .is_equal_to('Transfer to Scotiabank')
         self.assert_that(transaction.source_entry.account_id) \
-            .is_equal_to(constants.CASH_ACCOUNT_ID)
+            .is_equal_to(constants.BBVA_ACCOUNT_ID)
 
         self.assert_that(transaction.target_entry.amount).is_equal_to(25_000_15)
         self.assert_that(transaction.target_entry.concept) \
             .is_equal_to('Transfer from BBVA')
         self.assert_that(transaction.target_entry.account_id) \
-            .is_equal_to(constants.BBVA_ACCOUNT_ID)
+            .is_equal_to(constants.SCOTIABANK_ACCOUNT_ID)
 
     async def test_raises_could_not_create_transaction_when_database_fails(self):
         with patch.object(self.database.transactions, 'create') as mock:

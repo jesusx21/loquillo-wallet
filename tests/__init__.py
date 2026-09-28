@@ -1,3 +1,5 @@
+import asyncio
+
 from assertpy import assert_that
 from unittest import IsolatedAsyncioTestCase
 
@@ -8,6 +10,9 @@ from tests.config import TestConfig
 class TestCase(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
+
+        asyncio.get_running_loop().slow_callback_duration = 0.5
+
         await self.async_set_up()
 
     async def asyncTearDown(self):

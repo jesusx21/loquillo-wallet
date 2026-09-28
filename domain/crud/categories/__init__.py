@@ -1,10 +1,10 @@
 from uuid import UUID
 
 from .create import CreateCategory
-from .errors import CouldNotGetCategory, CategoryNotFound
+from .errors import CouldNotGetCategories, CouldNotGetCategory, CategoryNotFound
+from database.stores.errors import CategoryNotFound as CategoryDoesNotExist
 from domain.crud.base import CRUDBase
 from domain.entities.category import CategoryType
-from database.stores.errors import CategoryNotFound as CategoryDoesNotExist
 
 
 class Categories(CRUDBase):
@@ -27,6 +27,18 @@ class Categories(CRUDBase):
             raise CategoryNotFound(category_id) from error
         except Exception as error:
             raise CouldNotGetCategory(category_id, error) from error
+
+    async def get_income(self, user_id: UUID):
+        try:
+            return await self._database.categories.find_income_by_user_id(user_id)
+        except Exception as error:
+            raise CouldNotGetCategories(error) from error
+
+    async def get_expense(self, user_id: UUID):
+        try:
+            return await self._database.categories.find_expense_by_user_id(user_id)
+        except Exception as error:
+            raise CouldNotGetCategories(error) from error
 
     async def __create_category(self, user_id: UUID, name: str, type: CategoryType):
         create_category = CreateCategory(

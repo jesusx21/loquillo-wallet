@@ -117,9 +117,9 @@ class TestCreateLoanCategory(TestCategoriesCRUD):
 
         self.assert_that(category).is_not_none()
         self.assert_that(category).is_instance_of(Category)
-        self.assert_that(category.name).is_equal_to('Debt')
+        self.assert_that(category.name).is_equal_to('Loan')
         self.assert_that(category.user_id).is_equal_to(self.user_id)
-        self.assert_that(category.type).is_equal_to('debt')
+        self.assert_that(category.type.value).is_equal_to('loan')
         self.assert_that(category.id).is_not_none()
         self.assert_that(category.created_at).is_not_none()
         self.assert_that(category.updated_at).is_not_none()

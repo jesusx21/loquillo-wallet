@@ -26,6 +26,18 @@ class SQLCategoriesStore(SQLStore):
         except NotFound as error:
             raise CategoryNotFound(category_id) from error
 
+    async def find_debt_by_user_id(self, user_id: UUID):
+        return await self.__find_by_type_and_user_id(CategoryType.DEBT, user_id)
+
+    async def find_expense_by_user_id(self, user_id: UUID):
+        return await self.__find_by_type_and_user_id(CategoryType.EXPENSE, user_id)
+
+    async def find_income_by_user_id(self, user_id: UUID):
+        return await self.__find_by_type_and_user_id(CategoryType.INCOME, user_id)
+
+    async def find_loan_by_user_id(self, user_id: UUID):
+        return await self.__find_by_type_and_user_id(CategoryType.LOAN, user_id)
+
     async def find_by_user_id(self, user_id: UUID) -> list[Category]:
         return await self._find(user_id=user_id)
 
@@ -40,3 +52,6 @@ class SQLCategoriesStore(SQLStore):
             created_at=kwargs['created_at'],
             updated_at=kwargs['updated_at']
         )
+
+    async def __find_by_type_and_user_id(self, type: CategoryType, user_id: UUID):
+        return await self._find(user_id=user_id, type=type.value)

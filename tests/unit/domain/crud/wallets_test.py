@@ -25,7 +25,7 @@ class TestWalletsCRUD(TestCase):
 
 class TestCreateWallet(TestWalletsCRUD):
     async def test_create_wallet(self):
-        wallet = await self.wallets.create('Efectivo')
+        wallet = await self.wallets.create(self.user_id, 'Efectivo', WalletType.CASH)
 
         self.assert_that(wallet).is_instance_of(Wallet)
         self.assert_that(wallet.id).is_not_none()
@@ -35,7 +35,7 @@ class TestCreateWallet(TestWalletsCRUD):
         self.assert_that(wallet.user_id).is_equal_to(self.user_id)
 
     async def test_create_account_when_creating_a_wallet(self):
-        wallet = await self.wallets.create('Efectivo')
+        wallet = await self.wallets.create(self.user_id, 'Efectivo', WalletType.CASH)
         account = await self.database.accounts.find_by_id(wallet.account_id)
 
         self.assert_that(account).is_instance_of(Account)
@@ -47,14 +47,14 @@ class TestCreateWallet(TestWalletsCRUD):
             mock.side_effect = Exception('error')
 
             with self.assertRaises(CouldNotCreateWallet):
-                await self.wallets.create('Efectivo')
+                await self.wallets.create(self.user_id, 'Efectivo', WalletType.CASH)
 
 
 class TestGetWalletById(TestWalletsCRUD):
     async def async_set_up(self):
         await super().async_set_up()
 
-        self.wallet = await self.wallets.create('Efectivo')
+        self.wallet = await self.wallets.create(self.user_id, 'Efectivo', WalletType.CASH)
 
     async def test_get_wallet_by_id(self):
         wallet = await self.wallets.get_by_id(self.wallet.id)
@@ -126,7 +126,7 @@ class TestGetWalletsByTypes(TestWalletsCRUD):
 
     async def test_get_wallets_returns_empty_list_when_no_wallet_matches(self):
         wallets = await self.wallets.get_by_types(
-            constants.SECOND_USER_ID,
+            constants.WITHOUT_WALLETS_USER_ID,
             [WalletType.DEBIT_CARD, WalletType.CASH, WalletType.CREDIT_CARD]
         )
 

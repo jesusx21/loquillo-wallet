@@ -1,9 +1,10 @@
 import logging
+from datetime import datetime
 
 import click
 import inquirer
 
-from .custom_types import Email
+from .custom_types import Date, Email
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,12 @@ class Prompt:
     @staticmethod
     def string(message: str) -> str:
         value = click.prompt(message, type=str)
+
+        return value
+
+    @staticmethod
+    def date(message: str) -> datetime:
+        value = click.prompt(message, type=Date)
 
         return value
 

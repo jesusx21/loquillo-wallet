@@ -3,7 +3,6 @@ from uuid import UUID
 
 from .errors import CouldNotCreateTransaction
 from database.stores import Database
-from domain.crud.accounts import Accounts
 from domain.entities.transaction import TransactionStatus
 from domain.entities import Entry, Transaction
 
@@ -29,48 +28,46 @@ class CreateTransaction:
         self.__date = date
         self.__note = note
 
-        self.__accounts = Accounts(database)
-
     async def execute(self):
-        transaction = await self.__create_transaction()
+        async with self.__database.transacting() as database:
+            self.__database = database
 
-        return await self.__save_transaction(transaction)
+            try:
+                transaction = await self.__save_transaction()
+                transaction.add_entries(
+                    await self.__save_source_entry(transaction.id),
+                    await self.__save_target_entry(transaction.id)
+                )
+            except Exception as error:
+                raise CouldNotCreateTransaction(cause=error) from error
 
-    async def __create_transaction(self):
+        return transaction
+
+    async def __save_transaction(self):
         transaction = Transaction(
             status=TransactionStatus.COMPLETED,
             date=self.__date,
             note=self.__note
         )
 
-        source_account = await self.__accounts.get_by_id(self.__source_account_id)
-        target_account = await self.__accounts.get_by_id(self.__target_account_id)
+        return await self.__database.transactions.create(transaction)
 
-        transaction.add_entries(
-            Entry(
-                account=source_account,
-                amount=-self.__amount,
-                concept=self.__source_concept
-            ),
-            Entry(
-                account=target_account,
-                amount=self.__amount,
-                concept=self.__target_concept
-            )
+    async def __save_source_entry(self, transaction_id: UUID):
+        entry = Entry(
+            transaction_id=transaction_id,
+            account_id=self.__source_account_id,
+            amount=self.__amount * -1,
+            concept=self.__source_concept
         )
 
-        return transaction
+        return await self.__database.entries.create(entry)
 
-    async def __save_transaction(self, transaction_to_save: Transaction):
-        async with self.__database.transacting() as database:
-            try:
-                transaction = await database.transactions.create(transaction_to_save)
+    async def __save_target_entry(self, transaction_id: UUID):
+        entry = Entry(
+            transaction_id=transaction_id,
+            account_id=self.__target_account_id,
+            amount=self.__amount,
+            concept=self.__target_concept
+        )
 
-                for entry in transaction_to_save.entries:
-                    entry.transaction_id = transaction.id
-
-                    await database.entries.create(entry)
-            except Exception as error:
-                raise CouldNotCreateTransaction(cause=error) from error
-
-        return transaction
+        return await self.__database.entries.create(entry)

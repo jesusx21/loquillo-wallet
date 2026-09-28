@@ -37,5 +37,12 @@ wallets = [
         type=WalletType.DEBIT_CARD,
         user_id=constants.FIRST_USER_ID,
         account_id=constants.SCOTIABANK_ACCOUNT_ID
+    ),
+    Wallet(
+        id=constants.NU_BANK_WALLET_ID,
+        name='Nu Bank Wallet',
+        type=WalletType.DEBIT_CARD,
+        user_id=constants.SECOND_USER_ID,
+        account_id=constants.NU_BANK_ACCOUNT_ID
     )
 ]

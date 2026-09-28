@@ -17,8 +17,9 @@ class CouldNotCreateAccount(DomainError):
 
 
 class CouldNotGetAccount(DomainError):
-    def __init__(self, account_id: UUID):
+    def __init__(self, account_id: UUID, cause: Exception = None):
         super().__init__(
-            message=f'Could not get account with ID {account_id}',
+            f'Could not get account with ID {account_id}',
+            cause,
             account_id=account_id
         )

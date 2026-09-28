@@ -9,6 +9,7 @@ from domain.core.entity_accounts import EntityAccounts
 async def load_fixtures(database: Database, store_names: list[str]):
     store_fixture_map = {
         'accounts': database.accounts,
+        'categories': database.categories,
         'wallets': database.wallets
     }
 

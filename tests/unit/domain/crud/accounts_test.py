@@ -43,10 +43,10 @@ class TestGetAccountById(TestAccountsCRUD):
     async def async_set_up(self):
         await super().async_set_up()
 
-        self.account = await self.accounts.create_income_account('Income Account')
+        self.account = await self.accounts.create('Income Account')
 
     async def test_get_account_by_id(self):
-        account = await self.accounts.get_account_by_id(self.account.id)
+        account = await self.accounts.get_by_id(self.account.id)
 
         self.assert_that(account).is_not_none()
         self.assert_that(account).is_instance_of(Account)
@@ -58,11 +58,11 @@ class TestGetAccountById(TestAccountsCRUD):
 
     async def test_raise_error_when_account_not_found(self):
         with self.assertRaises(AccountNotFound):
-            await self.accounts.get_account_by_id(uuid4())
+            await self.accounts.get_by_id(uuid4())
 
     async def test_raise_error_when_database_fails(self):
         with patch.object(self.database.accounts, 'find_by_id') as mock:
             mock.side_effect = Exception('Database error')
 
             with self.assertRaises(CouldNotGetAccount):
-                await self.accounts.get_account_by_id(self.account.id)
+                await self.accounts.get_by_id(self.account.id)
