@@ -70,6 +70,21 @@ class MemoryStore(Generic[Entity]):
 
         return list(result)
 
+    async def _sum(self, field: str, **kwargs) -> list[Entity]:
+        result = filter(
+            lambda entity: all(
+                getattr(entity, key) in value
+                if isinstance(value, list)
+                else getattr(entity, key) == value
+                for key, value in kwargs.items()
+            ),
+            self.__get_entities()
+        )
+
+        result = sum(getattr(entity, field) for entity in result)
+
+        return result
+
     def __get_entities(self):
         entities = self.__items.values()
         entities = list(entities)

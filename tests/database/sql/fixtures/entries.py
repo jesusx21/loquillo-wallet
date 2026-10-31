@@ -14,7 +14,7 @@ entry_fixtures = {
         },
         {
             'id': constants.TARGET_ENTRY_ID,
-            'account_id': constants.ALBO_ACCOUNT_ID,
+            'account_id': constants.STORI_ACCOUNT_ID,
             'transaction_id': constants.TRANSACTION_ID,
             'concept': 'Salary',
             'amount': 2500,

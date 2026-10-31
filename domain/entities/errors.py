@@ -53,3 +53,17 @@ class NoSourceAccount(EntityError):
         super().__init__(
             message='No source account is set for the transaction'
         )
+
+
+class WalletEntriesAlreadySet(EntityError):
+    def __init__(self):
+        super().__init__(
+            message='Wallet entries are already set'
+        )
+
+
+class WalletEntriesNotSet(EntityError):
+    def __init__(self):
+        super().__init__(
+            message='Wallet entries are not set'
+        )

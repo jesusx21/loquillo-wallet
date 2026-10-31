@@ -1,10 +1,9 @@
 from enum import Enum
 from uuid import UUID
 
-from .account import Account
 from .entity import Entity
-from .errors import EntityAccountsNotSet, EntityAccountsAlreadySet
-from domain.core.entity_accounts import EntityAccounts
+from .errors import WalletEntriesNotSet, WalletEntriesAlreadySet
+from domain.core.wallet_entries import WalletEntries
 
 
 class WalletType(str, Enum):
@@ -20,37 +19,31 @@ class Wallet(Entity):
         type: WalletType,
         user_id: UUID,
         id=None,
-        account: Account | None = None,
         account_id: UUID = None,
         created_at=None,
         updated_at=None,
-        entity_accounts: EntityAccounts | None = None
+        wallet_entries: WalletEntries | None = None
     ):
         super().__init__(id=id, created_at=created_at, updated_at=updated_at)
 
         self.name = name
         self.type = type
+        self.account_id = account_id
         self.user_id = user_id
 
-        self.account_id = account.id if account_id is None and account is not None else account_id
+        self.__wallet_entries = wallet_entries
 
-        self.__account = account
-        self.__entity_accounts = entity_accounts
+    def set_wallet_entries(self, wallet_entries: WalletEntries):
+        if self.__wallet_entries is not None:
+            raise WalletEntriesAlreadySet()
 
-    def set_entity_accounts(self, entity_accounts: EntityAccounts):
-        if self.__entity_accounts is not None:
-            raise EntityAccountsAlreadySet()
+        self.__wallet_entries = wallet_entries
 
-        self.__entity_accounts = entity_accounts
+    def has_wallet_entries(self) -> bool:
+        return self.__wallet_entries is not None
 
-    async def get_account(self) -> Account:
-        if self.__account is not None:
-            return self.__account
+    async def get_balance(self) -> int:
+        if self.__wallet_entries is None:
+            raise WalletEntriesNotSet()
 
-        if self.__entity_accounts is None:
-            raise EntityAccountsNotSet()
-
-        self.__account = await self.__entity_accounts.find_by_account_id(self.account_id)
-        self.account_id = self.__account.id
-
-        return self.__account
+        return await self.__wallet_entries.get_balance()

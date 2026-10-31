@@ -15,7 +15,7 @@ class InMemoryDatabase:
         self.entries = MemoryEntriesStore()
         self.transactions = MemoryTransactionsStore(self)
         self.users = MemoryUsersStore()
-        self.wallets = MemoryWalletsStore()
+        self.wallets = MemoryWalletsStore(self)
 
         self._is_transacting = False
 

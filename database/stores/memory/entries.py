@@ -17,3 +17,6 @@ class MemoryEntriesStore(MemoryStore[Entry]):
             return await super().find_by_id(id)
         except NotFound as error:
             raise EntryNotFound(id) from error
+
+    async def sum_by_account_id(self, account_id: UUID) -> int:
+        return await self._sum('amount', account_id=account_id)

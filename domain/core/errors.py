@@ -18,3 +18,12 @@ class CouldNotLoadAccount(DomainError):
             account_id=account_id,
             cause=cause
         )
+
+
+class CouldNotLoadWalletBalance(DomainError):
+    def __init__(self, account_id: UUID, cause: Exception):
+        super().__init__(
+            message=f'Could not load wallet balance for account with id {account_id}',
+            account_id=account_id,
+            cause=cause
+        )

@@ -4,6 +4,7 @@ from enum import Enum
 from sqlalchemy import Executable as Statement, MappingResult, Table
 from sqlalchemy.engine import Row
 from sqlalchemy.exc import NoResultFound as DoesNotExist
+from sqlalchemy.sql import func, select
 
 from database.stores.errors import DatabaseError, InvalidId, NotFound
 
@@ -73,6 +74,23 @@ class SQLStore:
             cursor = await self._execute(statement)
 
             return [self.__format_input(row) for row in cursor.fetchall()]
+        except DoesNotExist as error:
+            raise NotFound(filters) from error
+        except Exception as error:
+            raise DatabaseError(cause=error)
+
+    async def _sum(self, field: str, **filters):
+        where_clauses = self.__format_where_clause(**filters)
+
+        statement = select(func.sum(self.__table.c[field])) \
+            .select_from(self.__table) \
+            .where(*where_clauses)
+
+        try:
+            cursor = await self._execute(statement)
+            result = cursor.first()
+
+            return int(result['sum_1'] or 0)
         except DoesNotExist as error:
             raise NotFound(filters) from error
         except Exception as error:

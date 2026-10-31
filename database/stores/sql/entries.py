@@ -25,6 +25,9 @@ class SQLEntriesStore(SQLStore):
         except NotFound as error:
             raise EntryNotFound(entry_id) from error
 
+    async def sum_by_account_id(self, account_id: UUID) -> int:
+        return await self._sum('amount', account_id=account_id)
+
     def _build_entity(self, **kwargs) -> Entry:
         entity_accounts = EntityAccounts(self._database)
 

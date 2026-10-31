@@ -3,7 +3,7 @@ from uuid import UUID
 from .store import SQLStore
 from database.stores.errors import NotFound, WalletNotFound
 from database.tables.wallets import Wallets
-from domain.core.entity_accounts import EntityAccounts
+from domain.core.wallet_entries import WalletEntries
 from domain.entities import Wallet
 from domain.entities.wallet import WalletType
 
@@ -36,7 +36,7 @@ class SQLWalletsStore(SQLStore):
         return await self._find(**filters)
 
     def _build_entity(self, **kwargs) -> Wallet:
-        entity_accounts = EntityAccounts(self._database)
+        wallet_entries = WalletEntries(self._database, kwargs['account_id'])
 
         return Wallet(
             id=kwargs['id'],
@@ -46,5 +46,5 @@ class SQLWalletsStore(SQLStore):
             user_id=kwargs['user_id'],
             created_at=kwargs['created_at'],
             updated_at=kwargs['updated_at'],
-            entity_accounts=entity_accounts
+            wallet_entries=wallet_entries
         )
