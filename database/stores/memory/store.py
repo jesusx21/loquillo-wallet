@@ -60,9 +60,7 @@ class MemoryStore(Generic[Entity]):
     async def _find(self, **kwargs) -> list[Entity]:
         result = filter(
             lambda entity: all(
-                getattr(entity, key) in value
-                if isinstance(value, list)
-                else getattr(entity, key) == value
+                self.__matches(entity, key, value)
                 for key, value in kwargs.items()
             ),
             self.__get_entities()
@@ -84,6 +82,17 @@ class MemoryStore(Generic[Entity]):
         result = sum(getattr(entity, field) for entity in result)
 
         return result
+
+    def __matches(self, entity: Entity, key: str, value) -> bool:
+        if key.endswith('__contains'):
+            field = getattr(entity, key.removesuffix('__contains'))
+
+            return value.lower() in field.lower()
+
+        if isinstance(value, list):
+            return getattr(entity, key) in value
+
+        return getattr(entity, key) == value
 
     def __get_entities(self):
         entities = self.__items.values()

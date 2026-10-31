@@ -26,3 +26,19 @@ class MemoryCategoriesStore(MemoryStore[Category]):
 
     async def find_by_user_id(self, user_id: UUID) -> list[Category]:
         return await self._find(user_id=user_id)
+
+    async def find_by_query(
+        self,
+        user_id: UUID,
+        q: str | None = None,
+        type: CategoryType | None = None
+    ) -> list[Category]:
+        filters = {'user_id': user_id}
+
+        if q:
+            filters['name__contains'] = q
+
+        if type:
+            filters['type'] = type
+
+        return await self._find(**filters)

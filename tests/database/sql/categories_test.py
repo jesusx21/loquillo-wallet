@@ -83,3 +83,59 @@ class TestFindCategoriesByUserId(TestCategoriesStore):
         self.assert_that({category.user_id for category in categories}).is_equal_to({
             constants.USER_ID
         })
+
+
+class TestFindCategoriesByQuery(TestCategoriesStore):
+    async def test_find_by_name(self):
+        categories = await self.database.categories.find_by_query(constants.USER_ID, q='sal')
+
+        self.assert_that(categories).is_length(1)
+        self.assert_that(categories[0].id).is_equal_to(constants.SALARY_CATEGORY_ID)
+
+    async def test_find_by_type(self):
+        categories = await self.database.categories.find_by_query(
+            constants.USER_ID,
+            type=CategoryType.EXPENSE
+        )
+
+        self.assert_that(categories).is_length(1)
+        self.assert_that(categories[0].id).is_equal_to(constants.RENT_CATEGORY_ID)
+
+    async def test_find_by_name_and_type(self):
+        categories = await self.database.categories.find_by_query(
+            constants.USER_ID,
+            q='alq',
+            type=CategoryType.EXPENSE
+        )
+
+        self.assert_that(categories).is_length(1)
+        self.assert_that(categories[0].id).is_equal_to(constants.RENT_CATEGORY_ID)
+
+    async def test_find_without_filters(self):
+        categories = await self.database.categories.find_by_query(constants.USER_ID)
+
+        self.assert_that(categories).is_length(2)
+
+    async def test_return_empty_list_when_nothing_matches(self):
+        categories = await self.database.categories.find_by_query(
+            constants.USER_ID,
+            q='sal',
+            type=CategoryType.EXPENSE
+        )
+
+        self.assert_that(categories).is_empty()
+
+    async def test_raise_error_on_finding_categories_by_query(self):
+        with patch.object(self.database.categories, '_execute') as mock:
+            mock.side_effect = Exception('An exception')
+
+            with self.assertRaises(DatabaseError):
+                await self.database.categories.find_by_query(constants.USER_ID, q='sal')
+
+    async def test_does_not_find_categories_from_other_users(self):
+        categories = await self.database.categories.find_by_query(
+            constants.SECOND_USER_ID,
+            q='sal'
+        )
+
+        self.assert_that(categories).is_empty()

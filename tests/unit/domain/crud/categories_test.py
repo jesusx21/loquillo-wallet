@@ -5,10 +5,12 @@ from unittest.mock import patch
 from tests import TestCase
 
 from domain.entities import Account, Category
+from domain.entities.category import CategoryType
 from domain.crud.categories import Categories
 from domain.crud.categories.errors import (
   CategoryNotFound,
   CouldNotCreateCategory,
+  CouldNotGetCategories,
   CouldNotGetCategory
 )
 
@@ -169,3 +171,35 @@ class TestGetCategoryById(TestCategoriesCRUD):
 
             with self.assertRaises(CouldNotGetCategory):
                 await self.categories.get_by_id(self.category.id)
+
+
+class TestGetCategoriesByQuery(TestCategoriesCRUD):
+    async def async_set_up(self):
+        await super().async_set_up()
+
+        self.income = await self.categories.create_income(self.user_id, 'Salary')
+        self.expense = await self.categories.create_expense(self.user_id, 'Rent')
+
+    async def test_get_by_name(self):
+        categories = await self.categories.get_by_query(self.user_id, q='sal')
+
+        self.assert_that(categories).is_length(1)
+        self.assert_that(categories[0].id).is_equal_to(self.income.id)
+
+    async def test_get_by_type(self):
+        categories = await self.categories.get_by_query(self.user_id, type=CategoryType.EXPENSE)
+
+        self.assert_that(categories).is_length(1)
+        self.assert_that(categories[0].id).is_equal_to(self.expense.id)
+
+    async def test_get_without_filters(self):
+        categories = await self.categories.get_by_query(self.user_id)
+
+        self.assert_that(categories).is_length(2)
+
+    async def test_raise_error_when_database_fails(self):
+        with patch.object(self.database.categories, 'find_by_query') as mock:
+            mock.side_effect = Exception('Database error')
+
+            with self.assertRaises(CouldNotGetCategories):
+                await self.categories.get_by_query(self.user_id, q='sal')

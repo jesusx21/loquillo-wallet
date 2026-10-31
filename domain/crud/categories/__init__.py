@@ -28,6 +28,17 @@ class Categories(CRUDBase):
         except Exception as error:
             raise CouldNotGetCategory(category_id, error) from error
 
+    async def get_by_query(
+        self,
+        user_id: UUID,
+        q: str | None = None,
+        type: CategoryType | None = None
+    ):
+        try:
+            return await self._database.categories.find_by_query(user_id, q=q, type=type)
+        except Exception as error:
+            raise CouldNotGetCategories(error) from error
+
     async def get_income(self, user_id: UUID):
         try:
             return await self._database.categories.find_income_by_user_id(user_id)

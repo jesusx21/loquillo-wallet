@@ -111,6 +111,12 @@ class SQLStore:
         where_clauses = []
 
         for key, value in filters.items():
+            if key.endswith('__contains'):
+                column = self.__table.c[key.removesuffix('__contains')]
+                escaped_value = value.replace('/', '//').replace('%', '/%').replace('_', '/_')
+                where_clauses.append(column.ilike(f'%{escaped_value}%', escape='/'))
+                continue
+
             formatted_value = self.__format_where_clause_value(value)
             column = self.__table.c[key]
 
